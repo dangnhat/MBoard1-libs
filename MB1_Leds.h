@@ -1,8 +1,8 @@
 /**
  * @file MB1_Leds.h
  * @author  Pham Huu Dang Nhat  <phamhuudangnhat@gmail.com>, HLib MBoard team.
- * @version 1.0
- * @date 18-10-2013
+ * @version 1.1 (updated to use with MBoard1-rev1.1)
+ * @date 9-4-2014
  * @brief This is header file for Leds on MBoard-1.
  *
  */
@@ -15,7 +15,7 @@
 
 /* Defintions for Leds on MBoard-1 */
 namespace Led_ns{
-    typedef enum {D5 = 0, RGB_Red = 1, RGB_Green = 2, RGB_Blue = 3} Led_t;
+    typedef enum {green = 0, red = 1} Led_t;
 }
 
 class Led {

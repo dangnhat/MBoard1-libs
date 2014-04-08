@@ -1,8 +1,8 @@
 /**
  * @file MB1_SPI.h
  * @author  Pham Huu Dang Nhat  <phamhuudangnhat@gmail.com>, HLib MBoard team.
- * @version 1.2
- * @date 16-11-2013
+ * @version 1.3
+ * @date 9-4-2013
  * @brief This is header file for SPIs on MBoard-1. MBoard-1 only supports SP1 and
  * SP2 as AF. SPI1 on APB2 clock brigde with Fmax = SystemClock, SP2 on APB1 with
  * Fmax = SystemClock/2.
@@ -118,6 +118,10 @@ public:
     uint16_t M2F_sendAndGet_blocking (SPI_ns::SM_device_t device, uint16_t data);
 
     /**< master 2 lines, full duplex interface */
+
+    /**< misc functions */
+    uint8_t misc_MISO_read (void);
+    /**< misc functions */
 
     /**< -------------- master mode --------------------------------*/
 

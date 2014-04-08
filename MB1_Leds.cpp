@@ -1,8 +1,8 @@
 /**
  * @file MB1_Leds.cpp
  * @author  Pham Huu Dang Nhat  <phamhuudangnhat@gmail.com>, HLib MBoard team.
- * @version 1.0
- * @date 18-10-2013
+ * @version 1.1 (updated to use with MBoard1-rev1.1)
+ * @date 9-4-2014
  * @brief This is source file for Leds on MBoard-1.
  *
  */
@@ -12,12 +12,12 @@
 using namespace Led_ns;
 
 /* Private vars and defs */
-GPIO_TypeDef * LedGPIOPorts [] = {GPIOC, GPIOC, GPIOC, GPIOC};
-GPIOMode_TypeDef LedGPIOMode [] = {GPIO_Mode_Out_PP, GPIO_Mode_Out_PP, GPIO_Mode_Out_PP, GPIO_Mode_Out_PP};
-const uint16_t LedGPIOPin [] = {GPIO_Pin_4, GPIO_Pin_7, GPIO_Pin_5, GPIO_Pin_9};
-GPIOSpeed_TypeDef LedGPIOSpeed [] = {GPIO_Speed_2MHz, GPIO_Speed_2MHz, GPIO_Speed_2MHz, GPIO_Speed_2MHz};
+GPIO_TypeDef * LedGPIOPorts [] = {GPIOC, GPIOC};
+GPIOMode_TypeDef LedGPIOMode [] = {GPIO_Mode_Out_PP, GPIO_Mode_Out_PP};
+const uint16_t LedGPIOPin [] = {GPIO_Pin_4, GPIO_Pin_9};
+GPIOSpeed_TypeDef LedGPIOSpeed [] = {GPIO_Speed_2MHz, GPIO_Speed_2MHz};
 
-const uint32_t LedGPIOClk [] = {RCC_APB2Periph_GPIOC,RCC_APB2Periph_GPIOC,RCC_APB2Periph_GPIOC,RCC_APB2Periph_GPIOC};
+const uint32_t LedGPIOClk [] = {RCC_APB2Periph_GPIOC,RCC_APB2Periph_GPIOC};
 
 /* Functions implementation */
 /* for class Leds */

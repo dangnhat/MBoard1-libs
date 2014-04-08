@@ -1,14 +1,14 @@
 /**
  * @file MB1_System.cpp
  * @author  Pham Huu Dang Nhat  <phamhuudangnhat@gmail.com>, HLib MBoard team.
- * @version 1.1
- * @date 17-11-2013
+ * @version 1.2
+ * @date 9-4-2014
  * @brief This file implement MB1_system_init function.
  * MB1_System :
  *
  * (MB1_SPI1)       (MB1_SPI2)
  *
- * (MB1_Led_D5)     (MB1_RGB_red)       (MB1_RGB_green)     (MB1_RGB_blue)
+ * (MB1_Led_green)  (MB1_Led_red)
  *
  * (MB1_UsrBtn0)    (MB1_UsrBtn1)
  * btn_activeStates = 0,
@@ -50,10 +50,8 @@ SPI MB1_SPI1 (1);
 SPI MB1_SPI2 (2);
 
 /**< LEDs */
-Led MB1_Led_D5 (Led_ns::D5);
-Led MB1_RGB_red (Led_ns::RGB_Red);
-Led MB1_RGB_blue (Led_ns::RGB_Blue);
-Led MB1_RGB_green (Led_ns::RGB_Green);
+Led MB1_Led_green (Led_ns::green);
+Led MB1_Led_red (Led_ns::red);
 
 /**< Buttons */
 Button MB1_usrBtn0 (Btn_ns::usrBtn_0);
@@ -90,7 +88,7 @@ const uint16_t MB1_conf_miscTIMPrescaler = 1;
 const uint16_t MB1_conf_miscTIMReloadVal = 36000; // for 1 msec with PCLK1 = 36MHz
 
 const uint16_t MB1_conf_ledBeat_period = 500; //in msec
-Led *MB1_conf_ledBeat_p = &MB1_Led_D5;
+Led *MB1_conf_ledBeat_p = &MB1_Led_red;
 /**< for SysTick and led_beat */
 
 /**< for USART1 */
@@ -113,7 +111,7 @@ const bool MB1_conf_btnProcessing_isUsed = true;
 /**< for ISRs */
 
 /**< others */
-const bool MB1_conf_bugsFix_isUsed = true;
+const bool MB1_conf_bugsFix_isUsed = false;
 const bool MB1_conf_NJTRST_isntUsed = true;
 /**< others */
 

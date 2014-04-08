@@ -1,8 +1,8 @@
 /**
  * @file MB1_System.h
  * @author  Pham Huu Dang Nhat  <phamhuudangnhat@gmail.com>, HLib MBoard team.
- * @version 1.1
- * @date 17-11-2013
+ * @version 1.2
+ * @date 9-4-2014
  * @brief This is the entry point of MBoard-1 system.
  */
 
@@ -26,10 +26,8 @@ extern SPI MB1_SPI1;
 extern SPI MB1_SPI2;
 
 /**< LEDs */
-extern Led MB1_Led_D5;
-extern Led MB1_RGB_red;
-extern Led MB1_RGB_blue;
-extern Led MB1_RGB_green;
+extern Led MB1_Led_red;
+extern Led MB1_Led_green;
 
 /**< Buttons */
 extern Button MB1_usrBtn0;

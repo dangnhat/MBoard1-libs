@@ -214,7 +214,7 @@ status_t SPI::SM_deviceToDecoder_set (SM_device_t device, uint8_t decode_value){
     if (device == allFree){
         SM_decode_all_free = decode_value;
         SM_deviceInUse = allFree;
-        SM_device_deselect(allFree);
+        this->SM_device_deselect(allFree);
     }
 
     return successful;
@@ -273,8 +273,8 @@ status_t SPI::SM_device_release (SM_device_t device){
     if (device != SM_deviceInUse)
         return failed;
 
-    SM_device_deselect(SM_deviceInUse);
-    SM_deviceInUse = allFree;
+    SM_device_deselect(SPI::SM_deviceInUse);
+    this->SM_deviceInUse = allFree;
     return successful;
 }
 
@@ -376,3 +376,20 @@ uint16_t SPI::M2F_sendAndGet_blocking (SM_device_t device, uint16_t data){
 /**< master 2 lines, full duplex interface */
 
 /**< -------------- master mode --------------------------------*/
+
+/**< -------------- misc functions ------------------------------*/
+
+/**
+  * @brief misc_MISO_read, read input data on MISO pin of using SPI.
+  * @param None.
+  * @return uint8_t : input data.
+  * @attention :
+  * - Using SPI must be init-ed before call this function.
+  */
+uint8_t SPI::misc_MISO_read (void){
+	bool remap_value = GPIO_isRemap [usedSPI];
+
+	return GPIO_ReadInputDataBit (MISO_ports[usedSPI][remap_value], MISO_pins[usedSPI][remap_value]);
+}
+/**< -------------- misc functions ------------------------------*/
+
