@@ -37,11 +37,11 @@ Led::Led(Led_t used_Led){
 }
 
 void Led::on(void){
-    GPIO_SetBits(LedGPIOPorts[used_Led], LedGPIOPin[used_Led]);
+    GPIO_ResetBits(LedGPIOPorts[used_Led], LedGPIOPin[used_Led]);
 }
 
 void Led::off(void){
-    GPIO_ResetBits(LedGPIOPorts[used_Led], LedGPIOPin[used_Led]);
+    GPIO_SetBits(LedGPIOPorts[used_Led], LedGPIOPin[used_Led]);
 }
 
 void Led::toggle(void){
