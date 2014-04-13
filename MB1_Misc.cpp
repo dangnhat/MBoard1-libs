@@ -23,11 +23,7 @@ uint16_t miscTIM_period = 0;
 
 /* Functions implementation */
 void bugs_fix (void){
-    Led Red (Led_ns::RGB_Red), Green (Led_ns::RGB_Green), Blue (Led_ns::RGB_Blue);
-
-    Red.off();
-    Green.off();
-    Blue.off();
+    return;
 }
 
 /**
