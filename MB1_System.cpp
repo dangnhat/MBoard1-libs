@@ -58,7 +58,7 @@ Button MB1_usrBtn0 (Btn_ns::usrBtn_0);
 Button MB1_usrBtn1 (Btn_ns::usrBtn_1);
 
 /**< USARTs */
-serial_t MB1_USART1 (1);
+/* serial_t MB1_USART1 (1); */
 serial_t MB1_USART2 (2);
 
 /**< CRC */
@@ -92,15 +92,17 @@ Led *MB1_conf_ledBeat_p = &MB1_Led_red;
 /**< for SysTick and led_beat */
 
 /**< for USART1 */
+/*
 const uint32_t MB1_conf_USART1_buadrate = 9600;
 const bool MB1_conf_USART1_retarget_isUsed = false;
 const uint8_t MB1_conf_USART1_retarget = USART_stdStream_stdout;
+*/
 /**< for USART1 */
 
 /**< for USART2 */
 const bool MB1_USART2_isUsed = true;
 const uint32_t MB1_conf_USART2_buadrate = 9600;
-const bool MB1_conf_USART2_retarget_isUsed = true;
+const bool MB1_conf_USART2_retarget_isUsed = false;
 const uint8_t MB1_conf_USART2_retarget = USART_stdStream_stdout;
 /**< for USART1 */
 
@@ -135,9 +137,11 @@ void MB1_system_init (void){
     /**< end SysTick and led beat */
 
     /**< USART1 */
+    /* Don't use UART1 with RIOT
     MB1_USART1.Restart (MB1_conf_USART1_buadrate);
     if (MB1_conf_USART1_retarget_isUsed)
         MB1_USART1.Retarget (USART_stdStream_stdout);
+    */
 
     /**< end USART1 */
 
