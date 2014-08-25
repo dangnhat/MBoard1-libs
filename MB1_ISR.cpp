@@ -287,7 +287,8 @@ void ISRMgr::USART1_subISR_table_init (void){
 
 
 /* ISRs */
-void SysTick_Handler (void){
+/* Changed from Systick_Handler to isr_systick to comply with RIOT */
+void isr_systick (void){
     uint8_t a_count;
 
     for (a_count = 0; a_count < numOfSubISR_max; a_count++){
@@ -299,7 +300,8 @@ void SysTick_Handler (void){
     return;
 }
 
-void TIM6_IRQHandler (void){
+/* Changed from TIM6_IRQHandler to isr_tim6 to comply with RIOT */
+void isr_tim6 (void){
     uint8_t a_count;
 
     /**< clear IT flag */
