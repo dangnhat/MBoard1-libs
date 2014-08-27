@@ -10,6 +10,9 @@
 /* Includes */
 #include "MB1_Misc.h"
 
+/* System Core Clock */
+extern uint32_t SystemCoreClock;
+
 /* Exported global vars */
 static int16_t LedBeat_count = -1; // for IRQ of Led Beat
 static Led *LedBeat_LedPtr = NULL;

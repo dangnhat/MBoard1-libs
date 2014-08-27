@@ -305,7 +305,7 @@ void isr_tim6 (void){
     uint8_t a_count;
 
     /**< clear IT flag */
-    TIM_ClearFlag (TIM6, TIM_FLAG_Update);
+    TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 
     for (a_count = 0; a_count < numOfSubISR_max; a_count++){
         if (TIM6_subISR_table[a_count] != NULL){
