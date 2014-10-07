@@ -10,6 +10,9 @@
 /* Includes */
 #include "MB1_Misc.h"
 
+/* System Core Clock */
+extern uint32_t SystemCoreClock;
+
 /* Exported global vars */
 static int16_t LedBeat_count = -1; // for IRQ of Led Beat
 static Led *LedBeat_LedPtr = NULL;
@@ -112,7 +115,7 @@ void bugs_fix (void){
  }
 
 /**
- * @brief LedBeat_SysTickISR
+ * @brief LedBeat_miscTIMISR
  * @return void
  * Use global var : LedBeat_count, LedBeat_LedPtr, miscTIM_period.
  */
@@ -131,6 +134,21 @@ void LedBeat_miscTIMISR (void){
 }
 
 /**
+ * @brief delay_us (uint32_t usec)
+ * @param uint32_t usec : time of delay in usec.
+ * @return void
+ * Delay at least usec. Thread safe. Use global var: SystemCoreClock
+ */
+void delay_us(uint32_t usec) {
+	uint32_t num_of_clockcycles = SystemCoreClock/1000000 * usec;
+	uint32_t count;
+
+	for (count = 0; count < num_of_clockcycles; count++) {
+		__asm__ __volatile__("nop");
+	}
+}
+
+/**
  * @brief delay_ms (uint32_t msec)
  * @param uint32_t msec : time of delay in msec.
  * @return void
@@ -145,9 +163,9 @@ void LedBeat_miscTIMISR (void){
  }
 
 /**
- * @brief Delayms_SysTickISR
+ * @brief delay_ms_miscTIMISR
  * @return void
- * Use global var : SysTick_period, Delayms_count (static).
+ * Use global var : miscTIMISR_period, Delayms_count (static).
  */
 void delay_ms_miscTIMISR (void){
     if (Delayms_count > 0)

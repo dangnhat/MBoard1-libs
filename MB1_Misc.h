@@ -17,24 +17,19 @@
 /* End includes */
 
 /* Global vars */
-//namespace Misc_ns{
-
 extern uint16_t ledBeat_period; // real value in msec.
 extern uint16_t miscTIM_period; // in msec.
-
-//}
 
 /* End global var */
 
 /* Prototypes */
 void bugs_fix (void);
 
-//TODO Complete these funcs.
-void delay_ms (uint32_t msec);
+void delay_us(uint32_t usec); // thread safe
+void delay_ms (uint32_t msec); // NOT thread safe
 void delay_ms_miscTIMISR (void); // It should be placed in miscTIMISR.
 
 void miscTIM_run (TIM_TypeDef *miscTIM, uint16_t prescaler, uint16_t reloadVal);
-//uint32_t run_SysTick (uint16_t msec);
 
 void LedBeat (bool On, uint16_t msec, Led *aLed);
 void LedBeat_miscTIMISR (void); // It should be placed in miscTIMISR.

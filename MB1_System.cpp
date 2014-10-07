@@ -62,7 +62,7 @@ Button MB1_usrBtn1 (Btn_ns::usrBtn_1);
 serial_t MB1_USART2 (2);
 
 /**< CRC */
-CRC_c MB1_crc;
+crc_hw MB1_crc;
 
 /**< Misc, global functions ! */
 
