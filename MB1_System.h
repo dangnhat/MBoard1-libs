@@ -38,7 +38,7 @@ extern serial_t MB1_USART1;
 extern serial_t MB1_USART2;
 
 /**< CRC */
-extern CRC_c MB1_crc;
+extern crc_hw MB1_crc;
 
 /**< Misc, global functions ! */
 
