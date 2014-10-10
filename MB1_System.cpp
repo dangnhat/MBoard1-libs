@@ -45,6 +45,10 @@
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 
+/** EXTIs */
+exti MB1_EXTI7(7);
+exti MB1_EXTI11(11);
+
 /**< SPIs */
 SPI MB1_SPI1 (1);
 SPI MB1_SPI2 (2);

@@ -19,7 +19,13 @@
 #include "MB1_Buttons.h"
 #include "hl_crc.h"
 
+#include "MB1_EXTI.h"
+
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
+
+/**< EXTIs */
+extern exti MB1_EXTI7;
+extern exti MB1_EXTI11;
 
 /**< SPIs */
 extern SPI MB1_SPI1;

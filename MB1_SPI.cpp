@@ -76,6 +76,8 @@ void SPI::M2F_GPIOs_Init (void) {
     RCC_APB2PeriphClockCmd (MISO_RCCs[usedSPI][remap_value], ENABLE);
     RCC_APB2PeriphClockCmd (SCK_RCCs[usedSPI][remap_value], ENABLE);
 
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
     /**< Init MOSI, MISO, SCK */
     GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -200,7 +202,7 @@ status_t SPI::SM_GPIO_set (SM_GPIOParams_s *params_struct){
   * @brief SM_deviceToDecoder_set, map a device id to decoder value table.
   * @param SPI_ns::SM_device_t device : a device id.
   * @param uint8_t decode_value : when select a device id, decoder ic use decoder_value to set one of its pin low.
-  * decode_value = 0 - SM_numOfDevices -1.
+  * decode_value = 0 -> SM_numOfDevices-1.
   * @return SPI_ns::status_t
   * This function will set SM_decode_value_all_free if device is SPI_ns::allFree (use in select, deselect a device)
   * and init decoder to all_free value ( call SM_device_deselect () ).
