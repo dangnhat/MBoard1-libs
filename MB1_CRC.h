@@ -1,5 +1,5 @@
 /**
- @file hl_crc.h
+ @file MB1_CRC.h
  @brief Implement some prototype functions to calculate CRC and check error from CRC received
 
  @author  Do Mai Anh Tu <aberrant.accolades@gmail.com>

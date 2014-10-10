@@ -1,5 +1,5 @@
 /**
- @file hl_crc.cpp
+ @file MB1_CRC.cpp
  @brief Implement some functions to calculate CRC and to check error from received CRC
 
  @author  Do Mai Anh Tu <aberrant.accolades@gmail.com>
