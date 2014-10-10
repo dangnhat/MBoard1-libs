@@ -8,7 +8,6 @@
  */
 #include "MB1_EXTI.h"
 #include "MB1_ISR.h"
-#include <stdio.h>
 
 using namespace exti_ns;
 
@@ -16,7 +15,6 @@ exti::exti(uint8_t line)
 {
     this->exti_pin_source = line;
     this->exti_gpio_pin = (uint16_t)1 << line;
-//    printf("gdo: 0x%lx\n", exti_gpio_pin);
 }
 
 bool exti::exti_init(exti_params_t *params_struct) {
@@ -98,7 +96,6 @@ bool exti::exti_init(exti_params_t *params_struct) {
     case 8:
     case 9:
         nvic_init_struct.NVIC_IRQChannel = EXTI9_5_IRQn;
-//        printf("gdo: %d\n", exti_pin_source);
         break;
     case 10:
     case 11:
@@ -107,14 +104,13 @@ bool exti::exti_init(exti_params_t *params_struct) {
     case 14:
     case 15:
         nvic_init_struct.NVIC_IRQChannel = EXTI15_10_IRQn;
-//        printf("gdo: %d\n", exti_pin_source);
         break;
     default:
         return false;
     }
     nvic_init_struct.NVIC_IRQChannelPreemptionPriority = 0x0F;
     nvic_init_struct.NVIC_IRQChannelSubPriority = 0x0F;
-    nvic_init_struct.NVIC_IRQChannelCmd = DISABLE;//ENABLE;
+    nvic_init_struct.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&nvic_init_struct);
 
     return true;

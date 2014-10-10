@@ -17,8 +17,7 @@
 #include "MB1_ISR.h"
 #include "MB1_SPI.h"
 #include "MB1_Buttons.h"
-#include "hl_crc.h"
-
+#include "MB1_CRC.h"
 #include "MB1_EXTI.h"
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/

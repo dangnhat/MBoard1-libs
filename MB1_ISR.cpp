@@ -9,7 +9,7 @@
 
 /* Includes */
 #include "MB1_ISR.h"
-#include <stdio.h>
+
 using namespace ISRMgr_ns;
 
 /**<------------------- Sub ISR tables ---------------------*/
@@ -82,7 +82,6 @@ status_t ISRMgr::subISR_assign (ISR_t ISR_type, void (* subISR_p)(void) ){
     case ISRMgr_EXTI14:
     case ISRMgr_EXTI15:
         retval = subISR_EXTI_assign((uint8_t)ISR_type, subISR_p);
-        printf("type: %d\n", (uint8_t)ISR_type);
         break;
     default:
         break;
@@ -411,7 +410,7 @@ void isr_tim6 (void){
     return;
 }
 
-//void EXTI0_IRQHandler(void) {
+extern "C" {
 void isr_exti0(void) {
     uint8_t a_count;
 
@@ -423,7 +422,6 @@ void isr_exti0(void) {
     EXTI_ClearITPendingBit(EXTI_Line0);
 }
 
-//void EXTI1_IRQHandler(void) {
 void isr_exti1(void) {
     uint8_t a_count;
 
@@ -435,7 +433,6 @@ void isr_exti1(void) {
     EXTI_ClearITPendingBit(EXTI_Line1);
 }
 
-//void EXTI2_IRQHandler(void) {
 void isr_exti2(void) {
     uint8_t a_count;
 
@@ -447,7 +444,6 @@ void isr_exti2(void) {
     EXTI_ClearITPendingBit(EXTI_Line2);
 }
 
-//void EXTI3_IRQHandler(void) {
 void isr_exti3(void) {
     uint8_t a_count;
 
@@ -459,7 +455,6 @@ void isr_exti3(void) {
     EXTI_ClearITPendingBit(EXTI_Line3);
 }
 
-//void EXTI4_IRQHandler(void) {
 void isr_exti4(void) {
     uint8_t a_count;
 
@@ -471,7 +466,6 @@ void isr_exti4(void) {
     EXTI_ClearITPendingBit(EXTI_Line4);
 }
 
-//void EXTI9_5_IRQHandler(void) {
 void isr_exti9_5(void) {
     uint8_t a_count;
 
@@ -522,7 +516,6 @@ void isr_exti9_5(void) {
     }
 }
 
-//void EXTI15_10_IRQHandler(void) {
 void isr_exti15_10(void) {
     uint8_t a_count;
 
@@ -581,6 +574,7 @@ void isr_exti15_10(void) {
         EXTI_ClearITPendingBit(EXTI_Line15);
     }
 }
+} //extern C
 
 /*
 void USART1_IRQHandler (void){

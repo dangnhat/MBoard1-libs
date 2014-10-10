@@ -19,7 +19,7 @@
  without written permission from SSAIC Group. Please contact ssaic@googlegroups.com for commercializing
  */
 
-#include "hl_crc.h"
+#include "MB1_CRC.h"
 
 void crc_hw::crc_start(void)
 {
