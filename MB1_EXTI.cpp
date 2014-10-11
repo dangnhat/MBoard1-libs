@@ -7,20 +7,21 @@
  *
  */
 #include "MB1_EXTI.h"
-#include "MB1_ISR.h"
 
 using namespace exti_ns;
 
 exti::exti(uint8_t line)
 {
     this->exti_pin_source = line;
-    this->exti_gpio_pin = (uint16_t)1 << line;
+    this->exti_gpio_pin = (uint16_t) 1 << line;
 }
 
-bool exti::exti_init(exti_params_t *params_struct) {
+bool exti::exti_init(exti_params_t *params_struct)
+{
     GPIO_TypeDef *gpio_x;
     uint32_t periph_rcc;
-    switch(params_struct->port) {
+
+    switch (params_struct->port) {
     case port_A:
         gpio_x = GPIOA;
         periph_rcc = RCC_APB2Periph_GPIOA;
@@ -58,7 +59,7 @@ bool exti::exti_init(exti_params_t *params_struct) {
 
     /* Initialize GPIO */
     gpio_init_struct.GPIO_Pin = exti_gpio_pin;
-    gpio_init_struct.GPIO_Mode = (GPIOMode_TypeDef)params_struct->mode;
+    gpio_init_struct.GPIO_Mode = (GPIOMode_TypeDef) params_struct->mode;
     gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(gpio_x, &gpio_init_struct);
 
@@ -70,11 +71,12 @@ bool exti::exti_init(exti_params_t *params_struct) {
     /* Initialize EXTI */
     exti_init_struct.EXTI_Line = exti_gpio_pin;
     exti_init_struct.EXTI_Mode = EXTI_Mode_Interrupt;
-    exti_init_struct.EXTI_Trigger = (EXTITrigger_TypeDef)params_struct->trigger;
+    exti_init_struct.EXTI_Trigger =
+            (EXTITrigger_TypeDef) params_struct->trigger;
     exti_init_struct.EXTI_LineCmd = ENABLE;
     EXTI_Init(&exti_init_struct);
 
-    switch(exti_pin_source) {
+    switch (exti_pin_source) {
     case 0:
         nvic_init_struct.NVIC_IRQChannel = EXTI0_IRQn;
         break;
@@ -116,22 +118,26 @@ bool exti::exti_init(exti_params_t *params_struct) {
     return true;
 }
 
-void exti::exti_line_enable(void) {
+void exti::exti_line_enable(void)
+{
     exti_init_struct.EXTI_LineCmd = ENABLE;
     EXTI_Init(&exti_init_struct);
 }
 
-void exti::exti_line_disable(void) {
+void exti::exti_line_disable(void)
+{
     exti_init_struct.EXTI_LineCmd = DISABLE;
     EXTI_Init(&exti_init_struct);
 }
 
-void exti::exti_trigger_setup(trigger_t trigger) {
-    exti_init_struct.EXTI_Trigger = (EXTITrigger_TypeDef)trigger;
+void exti::exti_trigger_setup(trigger_t trigger)
+{
+    exti_init_struct.EXTI_Trigger = (EXTITrigger_TypeDef) trigger;
     EXTI_Init(&exti_init_struct);
 }
 
-void exti::exti_priority_setup(uint8_t preemption, uint8_t sub) {
+void exti::exti_priority_setup(uint8_t preemption, uint8_t sub)
+{
     nvic_init_struct.NVIC_IRQChannelPreemptionPriority = preemption;
     nvic_init_struct.NVIC_IRQChannelSubPriority = sub;
     nvic_init_struct.NVIC_IRQChannelCmd = ENABLE;
