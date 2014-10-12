@@ -137,6 +137,10 @@ const bool MB1_conf_NJTRST_isntUsed = true;
 
 /**< conf interface (compile-time) */
 
+/* static functions */
+static void MB1_defaultState_reset(void);
+
+/* MBoard-1 initialization */
 void MB1_system_init (void){
     /**< others */
     if (MB1_conf_bugsFix_isUsed)
@@ -189,6 +193,15 @@ void MB1_system_init (void){
         NVIC_SetVectorTable(NVIC_VectTab_FLASH, MB1_VectorTableRelocationOffset);
     }
 
+    /* Reset MBoard-1 system to default state */
+    MB1_defaultState_reset();
  }
 
-
+/**
+ * @brief   Reset MBoard-1 system to default state.
+ *          MB1_Led_red, green off.
+ */
+static void MB1_defaultState_reset(void) {
+    MB1_Led_red.off();
+    MB1_Led_green.off();
+}
