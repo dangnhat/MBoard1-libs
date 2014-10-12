@@ -24,6 +24,22 @@ typedef enum {
 } status_t;
 
 typedef enum {
+    ISRMgr_EXTI0 = 0,
+    ISRMgr_EXTI1 = 1,
+    ISRMgr_EXTI2 = 2,
+    ISRMgr_EXTI3 = 3,
+    ISRMgr_EXTI4 = 4,
+    ISRMgr_EXTI5 = 5,
+    ISRMgr_EXTI6 = 6,
+    ISRMgr_EXTI7 = 7,
+    ISRMgr_EXTI8 = 8,
+    ISRMgr_EXTI9 = 9,
+    ISRMgr_EXTI10 = 10,
+    ISRMgr_EXTI11 = 11,
+    ISRMgr_EXTI12 = 12,
+    ISRMgr_EXTI13 = 13,
+    ISRMgr_EXTI14 = 14,
+    ISRMgr_EXTI15 = 15,
     ISRMgr_SysTick,
     ISRMgr_TIM6,
     ISRMgr_USART1,
@@ -55,6 +71,12 @@ private:
     ISRMgr_ns::status_t subISR_USART1_assign ( void (* subISR_p) (void) );
     ISRMgr_ns::status_t subISR_USART1_remove ( void (* subISR_p) (void) );
     /**< USART1 */
+
+    /**< EXTI */
+    void EXTI_subISR_table_init(void);
+    ISRMgr_ns::status_t subISR_EXTI_assign(uint8_t exti_line, void(*subISR_p)(void));
+    ISRMgr_ns::status_t subISR_EXTI_remove(uint8_t exti_line, void(*subISR_p)(void));
+    /**< EXTI */
 };
 
 #ifdef __cplusplus

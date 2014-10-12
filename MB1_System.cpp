@@ -45,6 +45,24 @@
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 
+/** EXTIs */
+exti MB1_EXTI0(0);
+exti MB1_EXTI1(1);
+exti MB1_EXTI2(2);
+exti MB1_EXTI3(3);
+exti MB1_EXTI4(4);
+exti MB1_EXTI5(5);
+exti MB1_EXTI6(6);
+exti MB1_EXTI7(7);
+exti MB1_EXTI8(8);
+exti MB1_EXTI9(9);
+exti MB1_EXTI10(10);
+exti MB1_EXTI11(11);
+exti MB1_EXTI12(12);
+exti MB1_EXTI13(13);
+exti MB1_EXTI14(14);
+exti MB1_EXTI15(15);
+
 /**< SPIs */
 SPI MB1_SPI1 (1);
 SPI MB1_SPI2 (2);
@@ -62,7 +80,7 @@ Button MB1_usrBtn1 (Btn_ns::usrBtn_1);
 serial_t MB1_USART2 (2);
 
 /**< CRC */
-CRC_c MB1_crc;
+crc_hw MB1_crc;
 
 /**< Misc, global functions ! */
 
