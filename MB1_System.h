@@ -36,6 +36,7 @@ extern Button MB1_usrBtn1;
 /**< USARTs */
 extern serial_t MB1_USART1;
 extern serial_t MB1_USART2;
+extern serial_t MB1_USART3;	//used by Anh
 
 /**< CRC */
 extern CRC_c MB1_crc;

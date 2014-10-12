@@ -60,6 +60,7 @@ Button MB1_usrBtn1 (Btn_ns::usrBtn_1);
 /**< USARTs */
 /* serial_t MB1_USART1 (1); */
 serial_t MB1_USART2 (2);
+serial_t MB1_USART3 (3);	//used by ANH
 
 /**< CRC */
 CRC_c MB1_crc;
@@ -104,7 +105,14 @@ const bool MB1_USART2_isUsed = true;
 const uint32_t MB1_conf_USART2_buadrate = 9600;
 const bool MB1_conf_USART2_retarget_isUsed = false;
 const uint8_t MB1_conf_USART2_retarget = USART_stdStream_stdout;
-/**< for USART1 */
+/**< for USART2 */
+
+/**< for USART3 */					//used by ANH
+const bool MB1_USART3_isUsed = true;
+const uint32_t MB1_conf_USART3_buadrate = 9600;
+const bool MB1_conf_USART3_retarget_isUsed = false;
+const uint8_t MB1_conf_USART3_retarget = USART_stdStream_stdout;
+/**< for USART3 */
 
 /**< for ISRs */
 const bool MB1_conf_LedBeat_isUsed = true;
@@ -151,8 +159,15 @@ void MB1_system_init (void){
         if (MB1_conf_USART2_retarget_isUsed)
             MB1_USART2.Retarget (USART_stdStream_stdout);
     }
-
     /**< end USART2 */
+
+    /**< USART3 */			//used by ANH
+	if (MB1_USART3_isUsed){
+		MB1_USART3.Restart (MB1_conf_USART3_buadrate);
+		if (MB1_conf_USART3_retarget_isUsed)
+			MB1_USART3.Retarget (USART_stdStream_stdout);
+	}
+	/**< end USART3 */
 
     /**< ISRs */
     if (MB1_conf_LedBeat_isUsed)

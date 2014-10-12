@@ -75,6 +75,7 @@ typedef struct {
 
 typedef enum {
     allFree,
+    cc1101_1,
     cc2530_1,
     at25Flash_1,
     at25Flash_2
