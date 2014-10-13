@@ -1,3 +1,4 @@
+
 /**
  * @file MB1_System.h
  * @author  Pham Huu Dang Nhat  <phamhuudangnhat@gmail.com>, HLib MBoard team.
@@ -55,7 +56,7 @@ extern Button MB1_usrBtn1;
 /**< USARTs */
 extern serial_t MB1_USART1;
 extern serial_t MB1_USART2;
-extern serial_t MB1_USART3;	//used by Anh
+extern serial_t MB1_USART3;
 
 /**< CRC */
 extern crc_hw MB1_crc;
