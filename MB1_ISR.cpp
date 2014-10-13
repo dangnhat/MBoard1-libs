@@ -15,55 +15,57 @@ using namespace ISRMgr_ns;
 /**<------------------- Sub ISR tables ---------------------*/
 
 /**< SysTick sub ISR table */
-void (* SysTick_subISR_table [numOfSubISR_max]) (void);
+void (*SysTick_subISR_table[numOfSubISR_max])(void);
 /**< SysTick sub ISR table */
 
 /**< TIM6 sub ISR table */
-void (* TIM6_subISR_table [numOfSubISR_max]) (void);
+void (*TIM6_subISR_table[numOfSubISR_max])(void);
 /**< TIM6 sub ISR table */
 
 /**< USART1 sub ISR table */
-void (* USART1_subISR_table [numOfSubISR_max]) (void);
+void (*USART1_subISR_table[numOfSubISR_max])(void);
 /**< USART1 sub ISR table */
 
 /**< EXTI sub ISR table */
-void (* EXTI_subISR_table [16][numOfSubISR_max]) (void);
+void (*EXTI_subISR_table[16][numOfSubISR_max])(void);
 /**< EXTI sub ISR table */
 
 /**<------------------- Sub ISR tables ---------------------*/
 
 /**< class ISRMgr */
-ISRMgr :: ISRMgr (void){
+ISRMgr::ISRMgr(void)
+{
     /**< Init sub ISR table of SysTick */
-    SysTick_subISR_table_init ();
-    TIM6_subISR_table_init ();
-    USART1_subISR_table_init ();
-    EXTI_subISR_table_init ();
+    SysTick_subISR_table_init();
+    TIM6_subISR_table_init();
+    USART1_subISR_table_init();
+    EXTI_subISR_table_init();
 
     return;
 }
 
 /**
-  * @brief subISR_assign. Assign a sub ISR function ptr to the sub ISR table of ISR_type
-  * @param ISR_t ISR_type
-  * @param void (* subISR_p)(void) (not a NULL ptr)
-  * @return None.
-  */
-status_t ISRMgr::subISR_assign (ISR_t ISR_type, void (* subISR_p)(void) ){
+ * @brief subISR_assign. Assign a sub ISR function ptr to the sub ISR table of ISR_type
+ * @param ISR_t ISR_type
+ * @param void (* subISR_p)(void) (not a NULL ptr)
+ * @return None.
+ */
+status_t ISRMgr::subISR_assign(ISR_t ISR_type, void (*subISR_p)(void))
+{
     status_t retval = failed;
 
     if (subISR_p == NULL)
         return failed;
 
-    switch (ISR_type){
-    case ISRMgr_SysTick :
-        retval = subISR_SysTick_assign (subISR_p);
+    switch (ISR_type) {
+    case ISRMgr_SysTick:
+        retval = subISR_SysTick_assign(subISR_p);
         break;
     case ISRMgr_TIM6:
-        retval = subISR_TIM6_assign (subISR_p);
+        retval = subISR_TIM6_assign(subISR_p);
         break;
     case ISRMgr_USART1:
-        retval = subISR_USART1_assign (subISR_p);
+        retval = subISR_USART1_assign(subISR_p);
         break;
     case ISRMgr_EXTI0:
     case ISRMgr_EXTI1:
@@ -81,7 +83,7 @@ status_t ISRMgr::subISR_assign (ISR_t ISR_type, void (* subISR_p)(void) ){
     case ISRMgr_EXTI13:
     case ISRMgr_EXTI14:
     case ISRMgr_EXTI15:
-        retval = subISR_EXTI_assign((uint8_t)ISR_type, subISR_p);
+        retval = subISR_EXTI_assign((uint8_t) ISR_type, subISR_p);
         break;
     default:
         break;
@@ -91,26 +93,27 @@ status_t ISRMgr::subISR_assign (ISR_t ISR_type, void (* subISR_p)(void) ){
 }
 
 /**
-  * @brief subISR_remove. remove a sub ISR function ptr to the sub ISR table of ISR_type
-  * @param ISR_t ISR_type
-  * @param void (* subISR_p)(void) (not a NULL ptr)
-  * @return None.
-  */
-status_t ISRMgr::subISR_remove (ISR_t ISR_type, void (* subISR_p)(void) ){
+ * @brief subISR_remove. remove a sub ISR function ptr to the sub ISR table of ISR_type
+ * @param ISR_t ISR_type
+ * @param void (* subISR_p)(void) (not a NULL ptr)
+ * @return None.
+ */
+status_t ISRMgr::subISR_remove(ISR_t ISR_type, void (*subISR_p)(void))
+{
     status_t retval = failed;
 
     if (subISR_p == NULL)
         return failed;
 
-switch (ISR_type){
+    switch (ISR_type) {
     case ISRMgr_SysTick:
-        retval = subISR_SysTick_remove (subISR_p);
+        retval = subISR_SysTick_remove(subISR_p);
         break;
     case ISRMgr_TIM6:
-        retval = subISR_TIM6_remove (subISR_p);
+        retval = subISR_TIM6_remove(subISR_p);
         break;
     case ISRMgr_USART1:
-        retval = subISR_USART1_assign (subISR_p);
+        retval = subISR_USART1_assign(subISR_p);
         break;
     case ISRMgr_EXTI0:
     case ISRMgr_EXTI1:
@@ -128,7 +131,7 @@ switch (ISR_type){
     case ISRMgr_EXTI13:
     case ISRMgr_EXTI14:
     case ISRMgr_EXTI15:
-        retval = subISR_EXTI_remove((uint8_t)ISR_type, subISR_p);
+        retval = subISR_EXTI_remove((uint8_t) ISR_type, subISR_p);
         break;
     default:
         break;
@@ -136,23 +139,23 @@ switch (ISR_type){
 
     return retval;
 }
-
 
 /**< SysTick private */
 
 /**
-  * @brief subISR_SysTick_assign. assign a sub ISR func ptr to SysTick_subISR_table.
-  * @param void (* subISR_p)(void)
-  * @return None.
-  */
-status_t ISRMgr::subISR_SysTick_assign (void (* subISR_p)(void) ){
+ * @brief subISR_SysTick_assign. assign a sub ISR func ptr to SysTick_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_SysTick_assign(void (*subISR_p)(void))
+{
     uint8_t i;
     bool found = false;
 
-    for (i = 0; i < numOfSubISR_max; i++){
-        if (SysTick_subISR_table [i] == NULL){
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (SysTick_subISR_table[i] == NULL) {
             found = true;
-            SysTick_subISR_table [i] = subISR_p;
+            SysTick_subISR_table[i] = subISR_p;
 
             break;
         }
@@ -165,18 +168,19 @@ status_t ISRMgr::subISR_SysTick_assign (void (* subISR_p)(void) ){
 }
 
 /**
-  * @brief subISR_SysTick_remove. Remove a sub ISR func ptr to SysTick_subISR_table.
-  * @param void (* subISR_p)(void)
-  * @return None.
-  */
-status_t ISRMgr::subISR_SysTick_remove (void (* subISR_p)(void) ){
+ * @brief subISR_SysTick_remove. Remove a sub ISR func ptr to SysTick_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_SysTick_remove(void (*subISR_p)(void))
+{
     uint8_t i;
     bool found = false;
 
-    for (i = 0; i < numOfSubISR_max; i++){
-        if (SysTick_subISR_table [i] == subISR_p){
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (SysTick_subISR_table[i] == subISR_p) {
             found = true;
-            SysTick_subISR_table [i] = NULL;
+            SysTick_subISR_table[i] = NULL;
 
             break;
         }
@@ -188,15 +192,15 @@ status_t ISRMgr::subISR_SysTick_remove (void (* subISR_p)(void) ){
     return failed;
 }
 
-
 /**
-  * @brief SysTick_subISR_table_init. Init all value in SysTick_subISR_table.
-  * @return None.
-  */
-void ISRMgr::SysTick_subISR_table_init (void){
+ * @brief SysTick_subISR_table_init. Init all value in SysTick_subISR_table.
+ * @return None.
+ */
+void ISRMgr::SysTick_subISR_table_init(void)
+{
     uint8_t a_count;
-    for (a_count = 0; a_count < numOfSubISR_max; a_count++ ){
-        SysTick_subISR_table [a_count] = NULL;
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        SysTick_subISR_table[a_count] = NULL;
     }
 }
 /**< SysTick private */
@@ -204,18 +208,19 @@ void ISRMgr::SysTick_subISR_table_init (void){
 /**< TIM6 private */
 
 /**
-  * @brief subISR_TIM6_assign. assign a sub ISR func ptr to TIM6_subISR_table.
-  * @param void (* subISR_p)(void)
-  * @return None.
-  */
-status_t ISRMgr::subISR_TIM6_assign (void (* subISR_p)(void) ){
+ * @brief subISR_TIM6_assign. assign a sub ISR func ptr to TIM6_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_TIM6_assign(void (*subISR_p)(void))
+{
     uint8_t i;
     bool found = false;
 
-    for (i = 0; i < numOfSubISR_max; i++){
-        if (TIM6_subISR_table [i] == NULL){
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (TIM6_subISR_table[i] == NULL) {
             found = true;
-            TIM6_subISR_table [i] = subISR_p;
+            TIM6_subISR_table[i] = subISR_p;
 
             break;
         }
@@ -228,18 +233,19 @@ status_t ISRMgr::subISR_TIM6_assign (void (* subISR_p)(void) ){
 }
 
 /**
-  * @brief subISR_TIM6_remove. Remove a sub ISR func ptr to TIM6_subISR_table.
-  * @param void (* subISR_p)(void)
-  * @return None.
-  */
-status_t ISRMgr::subISR_TIM6_remove (void (* subISR_p)(void) ){
+ * @brief subISR_TIM6_remove. Remove a sub ISR func ptr to TIM6_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_TIM6_remove(void (*subISR_p)(void))
+{
     uint8_t i;
     bool found = false;
 
-    for (i = 0; i < numOfSubISR_max; i++){
-        if (TIM6_subISR_table [i] == subISR_p){
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (TIM6_subISR_table[i] == subISR_p) {
             found = true;
-            TIM6_subISR_table [i] = NULL;
+            TIM6_subISR_table[i] = NULL;
 
             break;
         }
@@ -251,33 +257,34 @@ status_t ISRMgr::subISR_TIM6_remove (void (* subISR_p)(void) ){
     return failed;
 }
 
-
 /**
-  * @brief TIM6_subISR_table_init. Init all value in TIM6_subISR_table.
-  * @return None.
-  */
-void ISRMgr::TIM6_subISR_table_init (void){
+ * @brief TIM6_subISR_table_init. Init all value in TIM6_subISR_table.
+ * @return None.
+ */
+void ISRMgr::TIM6_subISR_table_init(void)
+{
     uint8_t a_count;
-    for (a_count = 0; a_count < numOfSubISR_max; a_count++ ){
-        TIM6_subISR_table [a_count] = NULL;
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        TIM6_subISR_table[a_count] = NULL;
     }
 }
 /**< TIM6 private */
 
 /**< USART1 private */
 /**
-  * @brief subISR_USART1_assign. assign a sub ISR func ptr to USART1_subISR_table.
-  * @param void (* subISR_p)(void)
-  * @return None.
-  */
-status_t ISRMgr::subISR_USART1_assign (void (* subISR_p)(void) ){
+ * @brief subISR_USART1_assign. assign a sub ISR func ptr to USART1_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_USART1_assign(void (*subISR_p)(void))
+{
     uint8_t i;
     bool found = false;
 
-    for (i = 0; i < numOfSubISR_max; i++){
-        if (USART1_subISR_table [i] == NULL){
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (USART1_subISR_table[i] == NULL) {
             found = true;
-            USART1_subISR_table [i] = subISR_p;
+            USART1_subISR_table[i] = subISR_p;
 
             break;
         }
@@ -290,18 +297,19 @@ status_t ISRMgr::subISR_USART1_assign (void (* subISR_p)(void) ){
 }
 
 /**
-  * @brief subISR_USART1_remove. Remove a sub ISR func ptr to USART1_subISR_table.
-  * @param void (* subISR_p)(void)
-  * @return None.
-  */
-status_t ISRMgr::subISR_USART1_remove (void (* subISR_p)(void) ){
+ * @brief subISR_USART1_remove. Remove a sub ISR func ptr to USART1_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_USART1_remove(void (*subISR_p)(void))
+{
     uint8_t i;
     bool found = false;
 
-    for (i = 0; i < numOfSubISR_max; i++){
-        if (USART1_subISR_table [i] == subISR_p){
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (USART1_subISR_table[i] == subISR_p) {
             found = true;
-            USART1_subISR_table [i] = NULL;
+            USART1_subISR_table[i] = NULL;
 
             break;
         }
@@ -313,31 +321,32 @@ status_t ISRMgr::subISR_USART1_remove (void (* subISR_p)(void) ){
     return failed;
 }
 
-
 /**
-  * @brief USART1_subISR_table_init. Init all value in USART1_subISR_table.
-  * @return None.
-  */
-void ISRMgr::USART1_subISR_table_init (void){
+ * @brief USART1_subISR_table_init. Init all value in USART1_subISR_table.
+ * @return None.
+ */
+void ISRMgr::USART1_subISR_table_init(void)
+{
     uint8_t a_count;
-    for (a_count = 0; a_count < numOfSubISR_max; a_count++ ){
-        USART1_subISR_table [a_count] = NULL;
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        USART1_subISR_table[a_count] = NULL;
     }
 }
 /**< USART1 private */
 
 /**< EXTI private */
 /**
-  * @brief subISR_EXTI_assign. assign a sub ISR func ptr to EXTI_subISR_table.
-  * @param void (* subISR_p)(void)
-  * @return None.
-  */
-status_t ISRMgr::subISR_EXTI_assign (uint8_t exti_line, void(*subISR_p)(void)){
+ * @brief subISR_EXTI_assign. assign a sub ISR func ptr to EXTI_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_EXTI_assign(uint8_t exti_line, void (*subISR_p)(void))
+{
     uint8_t i;
 
-    for (i = 0; i < numOfSubISR_max; i++){
-        if (EXTI_subISR_table [exti_line][i] == NULL){
-            EXTI_subISR_table [exti_line][i] = subISR_p;
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (EXTI_subISR_table[exti_line][i] == NULL) {
+            EXTI_subISR_table[exti_line][i] = subISR_p;
 
             return successful;
         }
@@ -347,16 +356,17 @@ status_t ISRMgr::subISR_EXTI_assign (uint8_t exti_line, void(*subISR_p)(void)){
 }
 
 /**
-  * @brief subISR_EXTI_remove. Remove a sub ISR func ptr to EXTI_subISR_table.
-  * @param void (* subISR_p)(void)
-  * @return None.
-  */
-status_t ISRMgr::subISR_EXTI_remove(uint8_t exti_line, void (* subISR_p)(void)){
+ * @brief subISR_EXTI_remove. Remove a sub ISR func ptr to EXTI_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_EXTI_remove(uint8_t exti_line, void (*subISR_p)(void))
+{
     uint8_t i;
 
-    for (i = 0; i < numOfSubISR_max; i++){
-        if (EXTI_subISR_table [exti_line][i] == subISR_p){
-            EXTI_subISR_table [exti_line][i] = NULL;
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (EXTI_subISR_table[exti_line][i] == subISR_p) {
+            EXTI_subISR_table[exti_line][i] = NULL;
 
             return successful;
         }
@@ -365,16 +375,16 @@ status_t ISRMgr::subISR_EXTI_remove(uint8_t exti_line, void (* subISR_p)(void)){
     return failed;
 }
 
-
 /**
-  * @brief EXTI_subISR_table_init. Init all value in EXTI_subISR_table.
-  * @return None.
-  */
-void ISRMgr::EXTI_subISR_table_init (void){
+ * @brief EXTI_subISR_table_init. Init all value in EXTI_subISR_table.
+ * @return None.
+ */
+void ISRMgr::EXTI_subISR_table_init(void)
+{
     uint8_t a_count, line;
     for (line = 0; line < 16; line++) {
-        for (a_count = 0; a_count < numOfSubISR_max; a_count++){
-            EXTI_subISR_table [line][a_count] = NULL;
+        for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+            EXTI_subISR_table[line][a_count] = NULL;
         }
     }
 }
@@ -382,12 +392,13 @@ void ISRMgr::EXTI_subISR_table_init (void){
 
 /* ISRs */
 /* Changed from Systick_Handler to isr_systick to comply with RIOT */
-void isr_systick (void){
+void isr_systick(void)
+{
     uint8_t a_count;
 
-    for (a_count = 0; a_count < numOfSubISR_max; a_count++){
-        if (SysTick_subISR_table[a_count] != NULL){
-            SysTick_subISR_table[a_count] ();
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        if (SysTick_subISR_table[a_count] != NULL) {
+            SysTick_subISR_table[a_count]();
         }
     }
 
@@ -395,204 +406,226 @@ void isr_systick (void){
 }
 
 /* Changed from TIM6_IRQHandler to isr_tim6 to comply with RIOT */
-void isr_tim6 (void){
+void isr_tim6(void)
+{
     uint8_t a_count;
 
     /**< clear IT flag */
     TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 
-    for (a_count = 0; a_count < numOfSubISR_max; a_count++){
-        if (TIM6_subISR_table[a_count] != NULL){
-            TIM6_subISR_table[a_count] ();
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        if (TIM6_subISR_table[a_count] != NULL) {
+            TIM6_subISR_table[a_count]();
         }
     }
 
     return;
 }
 
-extern "C" {
-void isr_exti0(void) {
+void isr_exti0(void)
+{
     uint8_t a_count;
 
+    EXTI_ClearITPendingBit (EXTI_Line0);
+
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-        if (EXTI_subISR_table[0][a_count] != NULL){
+        if (EXTI_subISR_table[0][a_count] != NULL) {
             EXTI_subISR_table[0][a_count]();
         }
     }
-    EXTI_ClearITPendingBit(EXTI_Line0);
 }
 
-void isr_exti1(void) {
+void isr_exti1(void)
+{
     uint8_t a_count;
 
+    EXTI_ClearITPendingBit (EXTI_Line1);
+
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-        if (EXTI_subISR_table[1][a_count] != NULL){
+        if (EXTI_subISR_table[1][a_count] != NULL) {
             EXTI_subISR_table[1][a_count]();
         }
     }
-    EXTI_ClearITPendingBit(EXTI_Line1);
 }
 
-void isr_exti2(void) {
+void isr_exti2(void)
+{
     uint8_t a_count;
 
+    EXTI_ClearITPendingBit (EXTI_Line2);
+
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-        if (EXTI_subISR_table[2][a_count] != NULL){
+        if (EXTI_subISR_table[2][a_count] != NULL) {
             EXTI_subISR_table[2][a_count]();
         }
     }
-    EXTI_ClearITPendingBit(EXTI_Line2);
 }
 
-void isr_exti3(void) {
+void isr_exti3(void)
+{
     uint8_t a_count;
 
+    EXTI_ClearITPendingBit (EXTI_Line3);
+
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-        if (EXTI_subISR_table[3][a_count] != NULL){
+        if (EXTI_subISR_table[3][a_count] != NULL) {
             EXTI_subISR_table[3][a_count]();
         }
     }
-    EXTI_ClearITPendingBit(EXTI_Line3);
 }
 
-void isr_exti4(void) {
+void isr_exti4(void)
+{
     uint8_t a_count;
 
+    EXTI_ClearITPendingBit (EXTI_Line4);
+
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-        if (EXTI_subISR_table[4][a_count] != NULL){
+        if (EXTI_subISR_table[4][a_count] != NULL) {
             EXTI_subISR_table[4][a_count]();
         }
     }
-    EXTI_ClearITPendingBit(EXTI_Line4);
 }
 
-void isr_exti9_5(void) {
+void isr_exti9_5(void)
+{
     uint8_t a_count;
 
-    if(EXTI_GetITStatus(EXTI_Line5) != RESET) {
+    if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line5);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[5][a_count] != NULL){
+            if (EXTI_subISR_table[5][a_count] != NULL) {
                 EXTI_subISR_table[5][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line5);
 
-    }else if(EXTI_GetITStatus(EXTI_Line6) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line6);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[6][a_count] != NULL){
+            if (EXTI_subISR_table[6][a_count] != NULL) {
                 EXTI_subISR_table[6][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line6);
 
-    }else if(EXTI_GetITStatus(EXTI_Line7) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line7) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line7);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[7][a_count] != NULL){
+            if (EXTI_subISR_table[7][a_count] != NULL) {
                 EXTI_subISR_table[7][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line7);
 
-    }else if(EXTI_GetITStatus(EXTI_Line8) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line8) != RESET) {
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[8][a_count] != NULL){
+            if (EXTI_subISR_table[8][a_count] != NULL) {
                 EXTI_subISR_table[8][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line8);
+        EXTI_ClearITPendingBit (EXTI_Line8);
 
-    }else if(EXTI_GetITStatus(EXTI_Line9) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line9) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line9);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[9][a_count] != NULL){
+            if (EXTI_subISR_table[9][a_count] != NULL) {
                 EXTI_subISR_table[9][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line9);
     }
 }
 
-void isr_exti15_10(void) {
+void isr_exti15_10(void)
+{
     uint8_t a_count;
 
-    if(EXTI_GetITStatus(EXTI_Line10) != RESET) {
+    if (EXTI_GetITStatus(EXTI_Line10) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line10);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[10][a_count] != NULL){
+            if (EXTI_subISR_table[10][a_count] != NULL) {
                 EXTI_subISR_table[10][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line10);
 
-    }else if(EXTI_GetITStatus(EXTI_Line11) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line11) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line11);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[11][a_count] != NULL){
+            if (EXTI_subISR_table[11][a_count] != NULL) {
                 EXTI_subISR_table[11][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line11);
 
-    }else if(EXTI_GetITStatus(EXTI_Line12) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line12) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line12);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[12][a_count] != NULL){
+            if (EXTI_subISR_table[12][a_count] != NULL) {
                 EXTI_subISR_table[12][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line12);
 
-    }else if(EXTI_GetITStatus(EXTI_Line13) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line13) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line13);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[13][a_count] != NULL){
+            if (EXTI_subISR_table[13][a_count] != NULL) {
                 EXTI_subISR_table[13][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line13);
 
-    }else if(EXTI_GetITStatus(EXTI_Line14) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line14) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line14);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[14][a_count] != NULL){
+            if (EXTI_subISR_table[14][a_count] != NULL) {
                 EXTI_subISR_table[14][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line14);
 
-    }else if(EXTI_GetITStatus(EXTI_Line15) != RESET) {
+    } else if (EXTI_GetITStatus(EXTI_Line15) != RESET) {
+
+        EXTI_ClearITPendingBit (EXTI_Line15);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
-            if (EXTI_subISR_table[15][a_count] != NULL){
+            if (EXTI_subISR_table[15][a_count] != NULL) {
                 EXTI_subISR_table[15][a_count]();
             }
         }
-        EXTI_ClearITPendingBit(EXTI_Line15);
+
     }
 }
-} //extern C
 
 /*
-void USART1_IRQHandler (void){
-    uint8_t a_count;
+ void USART1_IRQHandler (void){
+ uint8_t a_count;
 
-    for (a_count = 0; a_count < numOfSubISR_max; a_count++){
-        if (USART1_subISR_table[a_count] != NULL){
-            USART1_subISR_table[a_count] ();
-        }
-    }
-*/
-    /**< clear IT flag */
+ for (a_count = 0; a_count < numOfSubISR_max; a_count++){
+ if (USART1_subISR_table[a_count] != NULL){
+ USART1_subISR_table[a_count] ();
+ }
+ }
+ */
+/**< clear IT flag */
 /*    USART_ClearITPendingBit  (USART1, USART_IT_RXNE);
-    USART_ClearITPendingBit  (USART1, USART_IT_CTS);
-    USART_ClearITPendingBit  (USART1, USART_IT_LBD);
-    USART_ClearITPendingBit  (USART1, USART_IT_TC);
+ USART_ClearITPendingBit  (USART1, USART_IT_CTS);
+ USART_ClearITPendingBit  (USART1, USART_IT_LBD);
+ USART_ClearITPendingBit  (USART1, USART_IT_TC);
 
-    return;
-}
-*/
+ return;
+ }
+ */
 

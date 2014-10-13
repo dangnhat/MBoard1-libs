@@ -85,6 +85,13 @@ extern "C" {
 
 /* ISRs */
 void isr_tim6(void);
+void isr_exti0(void);
+void isr_exti1(void);
+void isr_exti2(void);
+void isr_exti3(void);
+void isr_exti4(void);
+void isr_exti9_5(void);
+void isr_exti15_10(void);
 
 #ifdef __cplusplus
 }
