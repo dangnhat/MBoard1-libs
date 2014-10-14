@@ -8,13 +8,7 @@
  */
 
 /* Includes */
-extern "C" {
-#include "cpu.h" /* RIOT specific. */
-#include "thread.h"
-}
-
 #include "MB1_ISR.h"
-
 
 using namespace ISRMgr_ns;
 
@@ -402,20 +396,11 @@ void isr_systick(void)
 {
     uint8_t a_count;
 
-    ISR_ENTER(); /* RIOT specific */
-
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
         if (SysTick_subISR_table[a_count] != NULL) {
             SysTick_subISR_table[a_count]();
         }
     }
-
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
 
     return;
 }
@@ -424,8 +409,6 @@ void isr_systick(void)
 void isr_tim6(void)
 {
     uint8_t a_count;
-
-    ISR_ENTER(); /* RIOT specific */
 
     /**< clear IT flag */
     TIM_ClearFlag(TIM6, TIM_FLAG_Update);
@@ -436,21 +419,12 @@ void isr_tim6(void)
         }
     }
 
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
-
     return;
 }
 
 void isr_exti0(void)
 {
     uint8_t a_count;
-
-    ISR_ENTER(); /* RIOT specific */
 
     EXTI_ClearITPendingBit (EXTI_Line0);
 
@@ -459,20 +433,11 @@ void isr_exti0(void)
             EXTI_subISR_table[0][a_count]();
         }
     }
-
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
 }
 
 void isr_exti1(void)
 {
     uint8_t a_count;
-
-    ISR_ENTER(); /* RIOT specific */
 
     EXTI_ClearITPendingBit (EXTI_Line1);
 
@@ -481,20 +446,11 @@ void isr_exti1(void)
             EXTI_subISR_table[1][a_count]();
         }
     }
-
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
 }
 
 void isr_exti2(void)
 {
     uint8_t a_count;
-
-    ISR_ENTER(); /* RIOT specific */
 
     EXTI_ClearITPendingBit (EXTI_Line2);
 
@@ -503,20 +459,11 @@ void isr_exti2(void)
             EXTI_subISR_table[2][a_count]();
         }
     }
-
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
 }
 
 void isr_exti3(void)
 {
     uint8_t a_count;
-
-    ISR_ENTER(); /* RIOT specific */
 
     EXTI_ClearITPendingBit (EXTI_Line3);
 
@@ -525,20 +472,11 @@ void isr_exti3(void)
             EXTI_subISR_table[3][a_count]();
         }
     }
-
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
 }
 
 void isr_exti4(void)
 {
     uint8_t a_count;
-
-    ISR_ENTER(); /* RIOT specific */
 
     EXTI_ClearITPendingBit (EXTI_Line4);
 
@@ -547,20 +485,11 @@ void isr_exti4(void)
             EXTI_subISR_table[4][a_count]();
         }
     }
-
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
 }
 
 void isr_exti9_5(void)
 {
     uint8_t a_count;
-
-    ISR_ENTER(); /* RIOT specific */
 
     if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
 
@@ -611,20 +540,11 @@ void isr_exti9_5(void)
             }
         }
     }
-
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
 }
 
 void isr_exti15_10(void)
 {
     uint8_t a_count;
-
-    ISR_ENTER(); /* RIOT specific */
 
     if (EXTI_GetITStatus(EXTI_Line10) != RESET) {
 
@@ -687,13 +607,6 @@ void isr_exti15_10(void)
         }
 
     }
-
-    /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
 }
 
 /*
