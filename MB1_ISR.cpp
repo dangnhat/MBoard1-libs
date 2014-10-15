@@ -32,6 +32,10 @@ void (*TIM6_subISR_table[numOfSubISR_max])(void);
 void (*USART1_subISR_table[numOfSubISR_max])(void);
 /**< USART1 sub ISR table */
 
+/**< USART3 sub ISR table */
+void (*USART3_subISR_table[numOfSubISR_max])(void);
+/**< USART3 sub ISR table *
+
 /**< EXTI sub ISR table */
 void (*EXTI_subISR_table[16][numOfSubISR_max])(void);
 /**< EXTI sub ISR table */
@@ -46,7 +50,7 @@ ISRMgr::ISRMgr(void)
     TIM6_subISR_table_init();
     USART1_subISR_table_init();
     EXTI_subISR_table_init();
-
+    USART3_subISR_table_init();
     return;
 }
 
@@ -73,6 +77,9 @@ status_t ISRMgr::subISR_assign(ISR_t ISR_type, void (*subISR_p)(void))
     case ISRMgr_USART1:
         retval = subISR_USART1_assign(subISR_p);
         break;
+    case ISRMgr_USART3:
+		retval = subISR_USART3_assign(subISR_p);
+		break;
     case ISRMgr_EXTI0:
     case ISRMgr_EXTI1:
     case ISRMgr_EXTI2:
@@ -119,8 +126,11 @@ status_t ISRMgr::subISR_remove(ISR_t ISR_type, void (*subISR_p)(void))
         retval = subISR_TIM6_remove(subISR_p);
         break;
     case ISRMgr_USART1:
-        retval = subISR_USART1_assign(subISR_p);
+        retval = subISR_USART1_remove(subISR_p);
         break;
+    case ISRMgr_USART3:
+		retval = subISR_USART3_remove(subISR_p);
+		break;
     case ISRMgr_EXTI0:
     case ISRMgr_EXTI1:
     case ISRMgr_EXTI2:
@@ -340,6 +350,70 @@ void ISRMgr::USART1_subISR_table_init(void)
 }
 /**< USART1 private */
 
+/**< USART3 private */
+/**
+ * @brief subISR_USART3_assign. assign a sub ISR func ptr to USART3_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_USART3_assign(void (*subISR_p)(void))
+{
+    uint8_t i;
+    bool found = false;
+
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (USART3_subISR_table[i] == NULL) {
+            found = true;
+            USART3_subISR_table[i] = subISR_p;
+
+            break;
+        }
+    }
+
+    if (found)
+        return successful;
+
+    return failed;
+}
+
+/**
+ * @brief subISR_USART3_remove. Remove a sub ISR func ptr to USART3_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_USART3_remove(void (*subISR_p)(void))
+{
+    uint8_t i;
+    bool found = false;
+
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (USART3_subISR_table[i] == subISR_p) {
+            found = true;
+            USART3_subISR_table[i] = NULL;
+
+            break;
+        }
+    }
+
+    if (found)
+        return successful;
+
+    return failed;
+}
+
+/**
+ * @brief USART3_subISR_table_init. Init all value in USART3_subISR_table.
+ * @return None.
+ */
+void ISRMgr::USART3_subISR_table_init(void)
+{
+    uint8_t a_count;
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        USART1_subISR_table[a_count] = NULL;
+    }
+}
+/**< USART3 private */
+
 /**< EXTI private */
 /**
  * @brief subISR_EXTI_assign. assign a sub ISR func ptr to EXTI_subISR_table.
@@ -425,7 +499,7 @@ void isr_tim6(void)
 {
     uint8_t a_count;
 
-    ISR_ENTER(); /* RIOT specific */
+//    ISR_ENTER(); /* RIOT specific */
 
     /**< clear IT flag */
     TIM_ClearFlag(TIM6, TIM_FLAG_Update);
@@ -437,11 +511,11 @@ void isr_tim6(void)
     }
 
     /* RIOT specific */
-    if (sched_context_switch_request) {
-        thread_yield();
-    }
-    ISR_EXIT();
-    /* RIOT specific */
+//    if (sched_context_switch_request) {
+//        thread_yield();
+//    }
+//    ISR_EXIT();
+//    /* RIOT specific */
 
     return;
 }
@@ -694,6 +768,31 @@ void isr_exti15_10(void)
     }
     ISR_EXIT();
     /* RIOT specific */
+}
+
+void isr_usart3(void)
+{
+    uint8_t a_count;
+
+//    ISR_ENTER(); /* RIOT specific */
+
+    /**< clear IT flag */
+    USART_ClearFlag(USART3, USART_FLAG_RXNE);
+
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        if (USART3_subISR_table[a_count] != NULL) {
+            USART3_subISR_table[a_count]();
+        }
+    }
+
+//    /* RIOT specific */
+//    if (sched_context_switch_request) {
+//        thread_yield();
+//    }
+//    ISR_EXIT();
+//    /* RIOT specific */
+
+    return;
 }
 
 /*
