@@ -686,8 +686,6 @@ void isr_usart3(void)
 {
     uint8_t a_count;
 
-//    ISR_ENTER(); /* RIOT specific */
-
     /**< clear IT flag */
     USART_ClearFlag(USART3, USART_FLAG_RXNE);
 
@@ -696,13 +694,6 @@ void isr_usart3(void)
             USART3_subISR_table[a_count]();
         }
     }
-
-//    /* RIOT specific */
-//    if (sched_context_switch_request) {
-//        thread_yield();
-//    }
-//    ISR_EXIT();
-//    /* RIOT specific */
 
     return;
 }
