@@ -10,36 +10,37 @@
 
 using namespace adc_ns;
 
-adc::adc(uint8_t channel) {
+uint16_t adc_converted_value;
+
+adc::adc(uint8_t channel)
+{
     this->channel = channel;
-    this->adc_converted_value = 0;
+    this->poll_data = false;
     /* ADC1 as default */
-    this->adc_num = adc1;
+    this->adc_x = ADC1;
 }
 
-void adc::adc_init(adc_params_t *adc_params) {
-    uint32_t adc_dr_address;
-    ADC_TypeDef *adc_x;
-    DMA_Channel_TypeDef *dma_channel_x;
-    this->adc_num = adc_params->adc;
-
+void adc::adc_init(adc_params_t *adc_params)
+{
     switch (adc_params->adc) {
     case adc1:
         adc_x = ADC1;
-        adc_dr_address = adc1_dr_addr;
-        dma_channel_x = DMA1_Channel1;
+        adc_rcc = RCC_APB2Periph_ADC1;
         break;
     case adc2:
         adc_x = ADC2;
+        adc_rcc = RCC_APB2Periph_ADC2;
         break;
     case adc3:
         adc_x = ADC3;
-        adc_dr_address = adc3_dr_addr;
-        dma_channel_x = DMA2_Channel1;
+        adc_rcc = RCC_APB2Periph_ADC3;
         break;
     default:
-        break;
+        return;
     }
+
+    RCC_ADCCLKConfig(RCC_PCLK2_Div6);
+    RCC_APB2PeriphClockCmd(adc_rcc, ENABLE);
 
     switch (adc_params->adc_mode) {
     case independent:
@@ -49,10 +50,10 @@ void adc::adc_init(adc_params_t *adc_params) {
         //TODO
         break;
     default:
-        break;
+        return;
     }
 
-    switch(adc_params->conv_mode) {
+    switch (adc_params->conv_mode) {
     case single_mode:
         adc_init_struct.ADC_ContinuousConvMode = DISABLE;
         adc_init_struct.ADC_ScanConvMode = DISABLE;
@@ -70,10 +71,10 @@ void adc::adc_init(adc_params_t *adc_params) {
         //TODO
         break;
     default:
-        break;
+        return;
     }
 
-    switch(adc_params->option) {
+    switch (adc_params->option) {
     case ext_trigger:
         //TODO
         break;
@@ -84,96 +85,81 @@ void adc::adc_init(adc_params_t *adc_params) {
         adc_init_struct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
         break;
     default:
-        break;
+        return;
     }
 
-    switch(adc_params->data_access) {
+    switch (adc_params->data_access) {
     case dma_request:
-        dma_config(dma_channel_x, adc_dr_address);
-        ADC_DMACmd(adc_x, ENABLE);
         break;
-    case irq:
+    case adc_irq:
         //TODO
         break;
     case poll:
+        poll_data = true;
         break;
+    default:
+        return;
     }
 
     adc_init_struct.ADC_DataAlign = ADC_DataAlign_Right;
     ADC_Init(adc_x, &adc_init_struct);
 
-    switch(adc_params->channel_type) {
+    switch (adc_params->channel_type) {
     case regular_channel:
-        ADC_RegularChannelConfig(adc_x, channel, 1, adc_params->adc_sample_time);
+        ADC_RegularChannelConfig(adc_x, channel, 1,
+                adc_params->adc_sample_time);
         break;
     case injected_channel:
         //TODO
         break;
     default:
-        break;
+        return;
     }
-
 }
 
-void adc::adc_start(void) {
-    ADC_TypeDef *adc_x;
-
-    switch (adc_num) {
-    case adc1:
-        adc_x = ADC1;
-        break;
-    case adc2:
-        adc_x = ADC2;
-        break;
-    case adc3:
-        adc_x = ADC3;
-        break;
-    default:
-        break;
-    }
-
-    ADC_Cmd(adc_x, ENABLE);
+void adc::adc_start(void)
+{
+    adc_en_dis(ENABLE);
 }
 
-void adc::adc_stop(void) {
-    ADC_TypeDef *adc_x;
-
-    switch (adc_num) {
-    case adc1:
-        adc_x = ADC1;
-        break;
-    case adc2:
-        adc_x = ADC2;
-        break;
-    case adc3:
-        adc_x = ADC3;
-        break;
-    default:
-        break;
-    }
-
-    ADC_Cmd(adc_x, DISABLE);
+void adc::adc_stop(void)
+{
+    adc_en_dis(DISABLE);
 }
 
-uint16_t adc::adc_convert(void) {
+uint16_t adc::adc_convert(void)
+{
+    /* Start conversation */
+    ADC_SoftwareStartConvCmd(adc_x, ENABLE);
+    if (poll_data) {
+        while (!ADC_GetFlagStatus(adc_x, ADC_FLAG_EOC)) {
+            ;
+        }
+        adc_converted_value = ADC_GetConversionValue(adc_x);
+        ADC_ClearFlag(adc_x, ADC_FLAG_EOC);
+    }
     return adc_converted_value;
 }
 
-void adc::dma_config(DMA_Channel_TypeDef *dma_channel_x, uint32_t adc_dr_addr) {
-    DMA_InitTypeDef dma_init_struct;
+void adc::adc_en_dis(FunctionalState new_state)
+{
+    RCC_APB2PeriphClockCmd(adc_rcc, new_state);
+    ADC_Cmd(adc_x, new_state);
 
-    DMA_DeInit(dma_channel_x);
-    dma_init_struct.DMA_PeripheralBaseAddr = adc_dr_addr;
-    dma_init_struct.DMA_MemoryBaseAddr = (uint32_t)&adc_converted_value;
-    dma_init_struct.DMA_DIR = DMA_DIR_PeripheralSRC;
-    dma_init_struct.DMA_BufferSize = 1;
-    dma_init_struct.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-    dma_init_struct.DMA_MemoryInc = DMA_MemoryInc_Disable;
-    dma_init_struct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-    dma_init_struct.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-    dma_init_struct.DMA_Mode = DMA_Mode_Circular;
-    dma_init_struct.DMA_Priority = DMA_Priority_High;
-    dma_init_struct.DMA_M2M = DMA_M2M_Disable;
-    DMA_Init(dma_channel_x, &dma_init_struct);
-    DMA_Cmd(dma_channel_x, ENABLE);
+    if (new_state == ENABLE) {
+        adc_calibration();
+    }
+}
+
+void adc::adc_calibration(void)
+{
+    ADC_ResetCalibration(adc_x);
+    while (ADC_GetResetCalibrationStatus(adc_x)) {
+        ;
+    }
+
+    ADC_StartCalibration(adc_x);
+    while (ADC_GetCalibrationStatus(adc_x)) {
+        ;
+    }
 }

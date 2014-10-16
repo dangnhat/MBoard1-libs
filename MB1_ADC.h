@@ -4,8 +4,17 @@
  * @version 1.0
  * @date 14-10-2014
  * @brief This is header file for ADC conversion for MBoard-1.
- *
+ * This lib is partial support for ADC:
+ *  _independent ADC.
+ *  _continuous mode.
+ *  _poll to get converted data.
  * @How to use:
+ *  -Declare an adc-class instance with a channel ADC.
+ *  -Initialize GPIO as analog input for ADC channel.
+ *  -Enter value to an "adc_params_t"
+ *  -Pass above struct into adc_init method to initialize ADC.
+ *  -Call adc_convert method to get converted data.
+ *  Note: DMA can only serve ADC1 and ADC3. ADCCLK: 0.6->14MHz.
  */
 #ifndef __MB1_ADC_H_
 #define __MB1_ADC_H_
@@ -39,7 +48,7 @@ typedef enum {
 
 typedef enum {
     dma_request,
-    irq,
+    adc_irq,
     poll
 } adc_access_t;
 
@@ -61,21 +70,52 @@ typedef struct {
 
 class adc {
 public:
+    /**
+     * @brief Constructor of adc class.
+     *
+     * @param[in] channel The channel on an specified ADC.
+     */
     adc(uint8_t channel);
 
+    /**
+     * @brief Initialize ADC.
+     *
+     * @param[in] adc_params A structure contains all user info about ADC.
+     */
     void adc_init(adc_ns::adc_params_t *adc_params);
+
+    /**
+     * @brief Start ADC.
+     */
     void adc_start(void);
+
+    /**
+     * @brief Stop ADC
+     */
     void adc_stop(void);
+
+    /**
+     * @brief Get converted data after ADC-ing.
+     *
+     * @return The converted data.
+     */
     uint16_t adc_convert(void);
 private:
     uint8_t channel;
-    adc_ns::adc_t adc_num;
-    uint32_t adc1_dr_addr = 0x4001244C;
-    uint32_t adc3_dr_addr = 0x40013C4C;
-    uint16_t adc_converted_value;
+    bool poll_data;
+
+    uint32_t adc_rcc;
+    ADC_TypeDef *adc_x;
     ADC_InitTypeDef adc_init_struct;
 
-    void dma_config(DMA_Channel_TypeDef *dma_channel_x, uint32_t adc_dr_addr);
+    /**
+     * @brief The private common method used to en/dis an ADC.
+     *
+     * @param[in] new_state ENABLE or DISABLE.
+     */
+    void adc_en_dis(FunctionalState new_state);
+
+    void adc_calibration(void);
 };
 
 #endif //__MB1_ADC_H_

@@ -45,7 +45,7 @@
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 
-/** EXTIs */
+/** EXTI lines */
 exti MB1_EXTI0(0);
 exti MB1_EXTI1(1);
 exti MB1_EXTI2(2);
@@ -62,6 +62,9 @@ exti MB1_EXTI12(12);
 exti MB1_EXTI13(13);
 exti MB1_EXTI14(14);
 exti MB1_EXTI15(15);
+
+/**< ADC channels */
+adc MB1_ADC1_IN16(ADC_Channel_16);
 
 /**< SPIs */
 SPI MB1_SPI1 (1);

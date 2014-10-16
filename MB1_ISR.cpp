@@ -28,7 +28,7 @@ void (*USART1_subISR_table[numOfSubISR_max])(void);
 
 /**< USART3 sub ISR table */
 void (*USART3_subISR_table[numOfSubISR_max])(void);
-/**< USART3 sub ISR table *
+/**< USART3 sub ISR table */
 
 /**< EXTI sub ISR table */
 void (*EXTI_subISR_table[16][numOfSubISR_max])(void);
