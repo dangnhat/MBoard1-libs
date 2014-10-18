@@ -60,6 +60,7 @@ typedef enum {
 typedef struct {
     adc_mode_t adc_mode;
     adc_t adc;
+    uint8_t adc_channel;
     adc_conv_mode_t conv_mode;
     adc_chn_t channel_type;
     adc_option_t option;
@@ -72,10 +73,8 @@ class adc {
 public:
     /**
      * @brief Constructor of adc class.
-     *
-     * @param[in] channel The channel on an specified ADC.
      */
-    adc(uint8_t channel);
+    adc(void);
 
     /**
      * @brief Initialize ADC.
@@ -101,7 +100,6 @@ public:
      */
     uint16_t adc_convert(void);
 private:
-    uint8_t channel;
     bool poll_data;
 
     uint32_t adc_rcc;

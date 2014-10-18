@@ -1,27 +1,29 @@
 /**
- * @file MB1_EXTI.cpp
+ * @file MB1_GPIO.cpp
  * @author  Nguyen Van Hien <nvhien1992@gmail.com>, HLib MBoard team.
  * @version 1.0
  * @date 08-10-2014
- * @brief This is source file for interrupt handlers for MBoard-1.
+ * @brief This is source file for manage GPIO and its EXTI for MBoard-1.
  *
  */
-#include "MB1_EXTI.h"
+#include "MB1_GPIO.h"
 
-using namespace exti_ns;
+using namespace gpio_ns;
 
-exti::exti(uint8_t line)
+gpio::gpio(void)
 {
-    this->exti_pin_source = line;
-    this->exti_gpio_pin = (uint16_t) 1 << line;
+    this->in_mode = true;
 }
 
-bool exti::exti_init(exti_params_t *params_struct)
+bool gpio::gpio_init(gpio_params_t *gpio_params)
 {
-    GPIO_TypeDef *gpio_x;
     uint32_t periph_rcc;
 
-    switch (params_struct->port) {
+    exti_port_source = gpio_params->port;
+    exti_pin_source = gpio_params->pin;
+    gpio_exti_pin = (uint16_t) 1 << exti_pin_source;
+
+    switch (gpio_params->port) {
     case port_A:
         gpio_x = GPIOA;
         periph_rcc = RCC_APB2Periph_GPIOA;
@@ -56,23 +58,55 @@ bool exti::exti_init(exti_params_t *params_struct)
     }
     /* Enable peripheral clock */
     RCC_APB2PeriphClockCmd(periph_rcc, ENABLE);
+    if (gpio_params->mode == af_open_drain
+            || gpio_params->mode == af_push_pull) {
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    }
+
+    if (gpio_params->mode == out_open_drain
+            || gpio_params->mode == out_push_pull) {
+        in_mode = false;
+    }
 
     /* Initialize GPIO */
-    gpio_init_struct.GPIO_Pin = exti_gpio_pin;
-    gpio_init_struct.GPIO_Mode = (GPIOMode_TypeDef) params_struct->mode;
+    gpio_init_struct.GPIO_Pin = gpio_exti_pin;
+    gpio_init_struct.GPIO_Mode = (GPIOMode_TypeDef) gpio_params->mode;
     gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(gpio_x, &gpio_init_struct);
 
+    return true;
+}
+
+uint8_t gpio::gpio_read(void)
+{
+    if (in_mode) {
+        return GPIO_ReadInputDataBit(gpio_x, gpio_exti_pin);
+    } else {
+        return GPIO_ReadOutputDataBit(gpio_x, gpio_exti_pin);
+    }
+}
+
+void gpio::gpio_set(void)
+{
+    GPIO_SetBits(gpio_x, gpio_exti_pin);
+}
+
+void gpio::gpio_reset(void)
+{
+    GPIO_ResetBits(gpio_x, gpio_exti_pin);
+}
+
+bool gpio::exti_init(exti_trigger_t trigger)
+{
     /* Enable AFIO clock */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     /* Connect EXTI Line to "exti_gpio_pin" pin */
-    GPIO_EXTILineConfig(params_struct->port, exti_pin_source);
+    GPIO_EXTILineConfig((uint8_t) exti_port_source, exti_pin_source);
 
     /* Initialize EXTI */
-    exti_init_struct.EXTI_Line = exti_gpio_pin;
+    exti_init_struct.EXTI_Line = gpio_exti_pin;
     exti_init_struct.EXTI_Mode = EXTI_Mode_Interrupt;
-    exti_init_struct.EXTI_Trigger =
-            (EXTITrigger_TypeDef) params_struct->trigger;
+    exti_init_struct.EXTI_Trigger = (EXTITrigger_TypeDef) trigger;
     exti_init_struct.EXTI_LineCmd = ENABLE;
     EXTI_Init(&exti_init_struct);
 
@@ -118,25 +152,25 @@ bool exti::exti_init(exti_params_t *params_struct)
     return true;
 }
 
-void exti::exti_line_enable(void)
+void gpio::exti_line_enable(void)
 {
     exti_init_struct.EXTI_LineCmd = ENABLE;
     EXTI_Init(&exti_init_struct);
 }
 
-void exti::exti_line_disable(void)
+void gpio::exti_line_disable(void)
 {
     exti_init_struct.EXTI_LineCmd = DISABLE;
     EXTI_Init(&exti_init_struct);
 }
 
-void exti::exti_trigger_setup(trigger_t trigger)
+void gpio::exti_trigger_setup(exti_trigger_t trigger)
 {
     exti_init_struct.EXTI_Trigger = (EXTITrigger_TypeDef) trigger;
     EXTI_Init(&exti_init_struct);
 }
 
-void exti::exti_priority_setup(uint8_t preemption, uint8_t sub)
+void gpio::exti_priority_setup(uint8_t preemption, uint8_t sub)
 {
     nvic_init_struct.NVIC_IRQChannelPreemptionPriority = preemption;
     nvic_init_struct.NVIC_IRQChannelSubPriority = sub;

@@ -12,9 +12,8 @@ using namespace adc_ns;
 
 uint16_t adc_converted_value;
 
-adc::adc(uint8_t channel)
+adc::adc(void)
 {
-    this->channel = channel;
     this->poll_data = false;
     /* ADC1 as default */
     this->adc_x = ADC1;
@@ -106,7 +105,7 @@ void adc::adc_init(adc_params_t *adc_params)
 
     switch (adc_params->channel_type) {
     case regular_channel:
-        ADC_RegularChannelConfig(adc_x, channel, 1,
+        ADC_RegularChannelConfig(adc_x, adc_params->adc_channel, 1,
                 adc_params->adc_sample_time);
         break;
     case injected_channel:

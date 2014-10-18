@@ -19,28 +19,14 @@
 #include "MB1_SPI.h"
 #include "MB1_Buttons.h"
 #include "MB1_CRC.h"
-#include "MB1_EXTI.h"
+#include "MB1_GPIO.h"
 #include "MB1_ADC.h"
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 
 /**< EXTI lines */
-extern exti MB1_EXTI0;
-extern exti MB1_EXTI1;
-extern exti MB1_EXTI2;
-extern exti MB1_EXTI3;
-extern exti MB1_EXTI4;
-extern exti MB1_EXTI5;
-extern exti MB1_EXTI6;
-extern exti MB1_EXTI7;
-extern exti MB1_EXTI8;
-extern exti MB1_EXTI9;
-extern exti MB1_EXTI10;
-extern exti MB1_EXTI11;
-extern exti MB1_EXTI12;
-extern exti MB1_EXTI13;
-extern exti MB1_EXTI14;
-extern exti MB1_EXTI15;
+extern gpio MB1_EXTI7;
+extern gpio MB1_EXTI11;
 
 /**< ADC channels */
 extern adc MB1_ADC1_IN16; //Internal temperature sensor.
