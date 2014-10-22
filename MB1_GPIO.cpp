@@ -10,6 +10,12 @@
 
 using namespace gpio_ns;
 
+GPIO_TypeDef *gpio_x[] = { GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF, GPIOG };
+
+const uint32_t periph_rcc[] = { RCC_APB2Periph_GPIOA, RCC_APB2Periph_GPIOB,
+RCC_APB2Periph_GPIOC, RCC_APB2Periph_GPIOD, RCC_APB2Periph_GPIOE,
+RCC_APB2Periph_GPIOF, RCC_APB2Periph_GPIOG };
+
 gpio::gpio(void)
 {
     this->in_mode = true;
@@ -17,47 +23,18 @@ gpio::gpio(void)
 
 bool gpio::gpio_init(gpio_params_t *gpio_params)
 {
-    uint32_t periph_rcc;
+    GPIO_InitTypeDef gpio_init_struct;
 
-    exti_port_source = gpio_params->port;
-    exti_pin_source = gpio_params->pin;
-    gpio_exti_pin = (uint16_t) 1 << exti_pin_source;
+    this->port_source = (uint8_t) gpio_params->port;
+    this->pin_source = gpio_params->pin;
 
-    switch (gpio_params->port) {
-    case port_A:
-        gpio_x = GPIOA;
-        periph_rcc = RCC_APB2Periph_GPIOA;
-        break;
-    case port_B:
-        gpio_x = GPIOB;
-        periph_rcc = RCC_APB2Periph_GPIOB;
-        break;
-    case port_C:
-        gpio_x = GPIOC;
-        periph_rcc = RCC_APB2Periph_GPIOC;
-        break;
-    case port_D:
-        gpio_x = GPIOD;
-        periph_rcc = RCC_APB2Periph_GPIOD;
-        break;
-    case port_E:
-        gpio_x = GPIOE;
-        periph_rcc = RCC_APB2Periph_GPIOE;
-        break;
-    case port_F:
-        gpio_x = GPIOF;
-        periph_rcc = RCC_APB2Periph_GPIOF;
-        break;
-    case port_G:
-        gpio_x = GPIOG;
-        periph_rcc = RCC_APB2Periph_GPIOG;
-        break;
-    default:
+    /* Check params */
+    if (this->port_source > 6 || this->pin_source > 15) {
         return false;
-        break;
     }
+
     /* Enable peripheral clock */
-    RCC_APB2PeriphClockCmd(periph_rcc, ENABLE);
+    RCC_APB2PeriphClockCmd(periph_rcc[port_source], ENABLE);
     if (gpio_params->mode == af_open_drain
             || gpio_params->mode == af_push_pull) {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
@@ -69,10 +46,23 @@ bool gpio::gpio_init(gpio_params_t *gpio_params)
     }
 
     /* Initialize GPIO */
-    gpio_init_struct.GPIO_Pin = gpio_exti_pin;
+    gpio_init_struct.GPIO_Pin = (uint16_t) 1 << pin_source;
     gpio_init_struct.GPIO_Mode = (GPIOMode_TypeDef) gpio_params->mode;
-    gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(gpio_x, &gpio_init_struct);
+    switch(gpio_params->gpio_speed) {
+    case speed_2MHz:
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_2MHz;
+        break;
+    case speed_10MHz:
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_10MHz;
+        break;
+    case speed_50MHz:
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        break;
+    default:
+        return false;
+    }
+
+    GPIO_Init(gpio_x[port_source], &gpio_init_struct);
 
     return true;
 }
@@ -80,37 +70,80 @@ bool gpio::gpio_init(gpio_params_t *gpio_params)
 uint8_t gpio::gpio_read(void)
 {
     if (in_mode) {
-        return GPIO_ReadInputDataBit(gpio_x, gpio_exti_pin);
+        return GPIO_ReadInputDataBit(gpio_x[port_source],
+                ((uint16_t) 1 << pin_source));
     } else {
-        return GPIO_ReadOutputDataBit(gpio_x, gpio_exti_pin);
+        return GPIO_ReadOutputDataBit(gpio_x[port_source],
+                ((uint16_t) 1 << pin_source));
     }
 }
 
 void gpio::gpio_set(void)
 {
-    GPIO_SetBits(gpio_x, gpio_exti_pin);
+    GPIO_SetBits(gpio_x[port_source], ((uint16_t) 1 << pin_source));
 }
 
 void gpio::gpio_reset(void)
 {
-    GPIO_ResetBits(gpio_x, gpio_exti_pin);
+    GPIO_ResetBits(gpio_x[port_source], ((uint16_t) 1 << pin_source));
 }
 
 bool gpio::exti_init(exti_trigger_t trigger)
 {
+    EXTI_InitTypeDef exti_init_struct;
+
+    /* Save trigger state */
+    this->trigger = trigger;
+
     /* Enable AFIO clock */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    /* Connect EXTI Line to "exti_gpio_pin" pin */
-    GPIO_EXTILineConfig((uint8_t) exti_port_source, exti_pin_source);
+    /* Connect EXTI Line to its pin */
+    GPIO_EXTILineConfig(port_source, pin_source);
 
     /* Initialize EXTI */
-    exti_init_struct.EXTI_Line = gpio_exti_pin;
-    exti_init_struct.EXTI_Mode = EXTI_Mode_Interrupt;
-    exti_init_struct.EXTI_Trigger = (EXTITrigger_TypeDef) trigger;
-    exti_init_struct.EXTI_LineCmd = ENABLE;
-    EXTI_Init(&exti_init_struct);
+    exti_line_init(this->trigger, ENABLE);
 
-    switch (exti_pin_source) {
+    nvic_init(0x0F, 0x0F);
+
+    return true;
+}
+
+void gpio::exti_line_enable(void)
+{
+    exti_line_init(this->trigger, ENABLE);
+}
+
+void gpio::exti_line_disable(void)
+{
+    exti_line_init(this->trigger, DISABLE);
+}
+
+void gpio::exti_trigger_setup(exti_trigger_t trigger)
+{
+    this->trigger = trigger;
+    exti_line_init(this->trigger, ENABLE);
+}
+
+void gpio::exti_priority_setup(uint8_t preemption, uint8_t sub)
+{
+    nvic_init(preemption, sub);
+}
+
+void gpio::exti_line_init(exti_trigger_t trigger, FunctionalState new_state) {
+    EXTI_InitTypeDef exti_init_struct;
+
+    exti_init_struct.EXTI_Line = (uint16_t) 1 << pin_source;
+    exti_init_struct.EXTI_Mode = EXTI_Mode_Interrupt;
+    exti_init_struct.EXTI_Trigger = (EXTITrigger_TypeDef) this->trigger;
+    exti_init_struct.EXTI_LineCmd = new_state;
+    EXTI_Init(&exti_init_struct);
+}
+
+void gpio::nvic_init(uint8_t preemption, uint8_t sub)
+{
+    NVIC_InitTypeDef nvic_init_struct;
+
+    switch (pin_source) {
     case 0:
         nvic_init_struct.NVIC_IRQChannel = EXTI0_IRQn;
         break;
@@ -142,36 +175,8 @@ bool gpio::exti_init(exti_trigger_t trigger)
         nvic_init_struct.NVIC_IRQChannel = EXTI15_10_IRQn;
         break;
     default:
-        return false;
+        break;
     }
-    nvic_init_struct.NVIC_IRQChannelPreemptionPriority = 0x0F;
-    nvic_init_struct.NVIC_IRQChannelSubPriority = 0x0F;
-    nvic_init_struct.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&nvic_init_struct);
-
-    return true;
-}
-
-void gpio::exti_line_enable(void)
-{
-    exti_init_struct.EXTI_LineCmd = ENABLE;
-    EXTI_Init(&exti_init_struct);
-}
-
-void gpio::exti_line_disable(void)
-{
-    exti_init_struct.EXTI_LineCmd = DISABLE;
-    EXTI_Init(&exti_init_struct);
-}
-
-void gpio::exti_trigger_setup(exti_trigger_t trigger)
-{
-    exti_init_struct.EXTI_Trigger = (EXTITrigger_TypeDef) trigger;
-    EXTI_Init(&exti_init_struct);
-}
-
-void gpio::exti_priority_setup(uint8_t preemption, uint8_t sub)
-{
     nvic_init_struct.NVIC_IRQChannelPreemptionPriority = preemption;
     nvic_init_struct.NVIC_IRQChannelSubPriority = sub;
     nvic_init_struct.NVIC_IRQChannelCmd = ENABLE;

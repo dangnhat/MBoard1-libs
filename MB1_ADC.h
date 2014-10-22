@@ -9,7 +9,7 @@
  *  _continuous mode.
  *  _poll to get converted data.
  * @How to use:
- *  -Declare an adc-class instance with a channel ADC.
+ *  -Declare an adc-class instance.
  *  -Initialize GPIO as analog input for ADC channel.
  *  -Enter value to an "adc_params_t"
  *  -Pass above struct into adc_init method to initialize ADC.
@@ -23,9 +23,9 @@
 
 namespace adc_ns {
 typedef enum {
-    adc1,
-    adc2,
-    adc3
+    adc1 = 0,
+    adc2 = 1,
+    adc3 = 2
 } adc_t;
 
 typedef enum {
@@ -89,7 +89,7 @@ public:
     void adc_start(void);
 
     /**
-     * @brief Stop ADC
+     * @brief Stop ADC. Shouldn't use if another ADC channel is still running.
      */
     void adc_stop(void);
 
@@ -101,10 +101,7 @@ public:
     uint16_t adc_convert(void);
 private:
     bool poll_data;
-
-    uint32_t adc_rcc;
-    ADC_TypeDef *adc_x;
-    ADC_InitTypeDef adc_init_struct;
+    uint8_t adc_num;
 
     /**
      * @brief The private common method used to en/dis an ADC.

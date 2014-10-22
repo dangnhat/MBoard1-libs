@@ -21,6 +21,7 @@
 #include "MB1_CRC.h"
 #include "MB1_GPIO.h"
 #include "MB1_ADC.h"
+#include "MB1_PWM.h"
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 

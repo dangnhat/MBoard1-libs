@@ -22,38 +22,45 @@
 #include "MB1_Glb.h"
 
 namespace gpio_ns {
-    typedef enum {
-        port_A = 0,
-        port_B = 1,
-        port_C = 2,
-        port_D = 3,
-        port_E = 4,
-        port_F = 5,
-        port_G = 6
-    } port_t;
+typedef enum {
+    port_A = 0,
+    port_B = 1,
+    port_C = 2,
+    port_D = 3,
+    port_E = 4,
+    port_F = 5,
+    port_G = 6
+} port_t;
 
-    typedef enum {
-        rising_edge = 0x08,
-        falling_edge = 0x0C,
-        both_edge = 0x10
-    } exti_trigger_t;
+typedef enum {
+    rising_edge = 0x08,
+    falling_edge = 0x0C,
+    both_edge = 0x10
+} exti_trigger_t;
 
-    typedef enum {
-        in_analog = 0x00,
-        in_floating = 0x04,
-        in_pull_down = 0x28,
-        in_pull_up = 0x48,
-        out_open_drain = 0x14,
-        out_push_pull = 0x10,
-        af_open_drain = 0x1C,
-        af_push_pull = 0x18
-    } gpio_mode_t;
+typedef enum {
+    in_analog = 0x00,
+    in_floating = 0x04,
+    in_pull_down = 0x28,
+    in_pull_up = 0x48,
+    out_open_drain = 0x14,
+    out_push_pull = 0x10,
+    af_open_drain = 0x1C,
+    af_push_pull = 0x18
+} gpio_mode_t;
 
-    typedef struct {
-        port_t port;
-        uint8_t pin;
-        gpio_mode_t mode;
-    } gpio_params_t;
+typedef enum {
+    speed_2MHz,
+    speed_10MHz,
+    speed_50MHz
+} gpio_speed_t;
+
+typedef struct {
+    port_t port;
+    uint8_t pin;
+    gpio_mode_t mode;
+    gpio_speed_t gpio_speed;
+} gpio_params_t;
 }
 
 class gpio {
@@ -120,15 +127,14 @@ public:
      */
     void exti_trigger_setup(gpio_ns::exti_trigger_t trigger);
 private:
-    gpio_ns::port_t exti_port_source;
-    uint8_t exti_pin_source;
-    uint16_t gpio_exti_pin;
-    GPIO_TypeDef *gpio_x;
+    uint8_t port_source;
+    uint8_t pin_source;
+    gpio_ns::exti_trigger_t trigger;
     bool in_mode;
 
-    GPIO_InitTypeDef gpio_init_struct;
-    EXTI_InitTypeDef exti_init_struct;
-    NVIC_InitTypeDef nvic_init_struct;
+    void exti_line_init(gpio_ns::exti_trigger_t trigger, FunctionalState new_state);
+
+    void nvic_init(uint8_t preemption, uint8_t sub);
 };
 
 #endif //__MB1_GPIO_H_

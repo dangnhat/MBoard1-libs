@@ -10,36 +10,25 @@
 
 using namespace adc_ns;
 
-uint16_t adc_converted_value;
+ADC_TypeDef *adc_x[] = { ADC1, ADC2, ADC3 };
+const uint32_t adc_rcc[] = { RCC_APB2Periph_ADC1, RCC_APB2Periph_ADC2,
+        RCC_APB2Periph_ADC3 };
 
 adc::adc(void)
 {
     this->poll_data = false;
     /* ADC1 as default */
-    this->adc_x = ADC1;
+    this->adc_num = 0;
 }
 
 void adc::adc_init(adc_params_t *adc_params)
 {
-    switch (adc_params->adc) {
-    case adc1:
-        adc_x = ADC1;
-        adc_rcc = RCC_APB2Periph_ADC1;
-        break;
-    case adc2:
-        adc_x = ADC2;
-        adc_rcc = RCC_APB2Periph_ADC2;
-        break;
-    case adc3:
-        adc_x = ADC3;
-        adc_rcc = RCC_APB2Periph_ADC3;
-        break;
-    default:
-        return;
-    }
+    ADC_InitTypeDef adc_init_struct;
+
+    this->adc_num = (uint8_t) adc_params->adc;
 
     RCC_ADCCLKConfig(RCC_PCLK2_Div6);
-    RCC_APB2PeriphClockCmd(adc_rcc, ENABLE);
+    RCC_APB2PeriphClockCmd(adc_rcc[adc_num], ENABLE);
 
     switch (adc_params->adc_mode) {
     case independent:
@@ -101,12 +90,12 @@ void adc::adc_init(adc_params_t *adc_params)
     }
 
     adc_init_struct.ADC_DataAlign = ADC_DataAlign_Right;
-    ADC_Init(adc_x, &adc_init_struct);
+    ADC_Init(adc_x[this->adc_num], &adc_init_struct);
 
     switch (adc_params->channel_type) {
     case regular_channel:
-        ADC_RegularChannelConfig(adc_x, adc_params->adc_channel, 1,
-                adc_params->adc_sample_time);
+        ADC_RegularChannelConfig(adc_x[this->adc_num], adc_params->adc_channel,
+                1, adc_params->adc_sample_time);
         break;
     case injected_channel:
         //TODO
@@ -128,22 +117,24 @@ void adc::adc_stop(void)
 
 uint16_t adc::adc_convert(void)
 {
+    uint16_t adc_converted_value;
+
     /* Start conversation */
-    ADC_SoftwareStartConvCmd(adc_x, ENABLE);
+    ADC_SoftwareStartConvCmd(adc_x[this->adc_num], ENABLE);
     if (poll_data) {
-        while (!ADC_GetFlagStatus(adc_x, ADC_FLAG_EOC)) {
+        while (!ADC_GetFlagStatus(adc_x[this->adc_num], ADC_FLAG_EOC)) {
             ;
         }
-        adc_converted_value = ADC_GetConversionValue(adc_x);
-        ADC_ClearFlag(adc_x, ADC_FLAG_EOC);
+        adc_converted_value = ADC_GetConversionValue(adc_x[this->adc_num]);
+        ADC_ClearFlag(adc_x[this->adc_num], ADC_FLAG_EOC);
     }
     return adc_converted_value;
 }
 
 void adc::adc_en_dis(FunctionalState new_state)
 {
-    RCC_APB2PeriphClockCmd(adc_rcc, new_state);
-    ADC_Cmd(adc_x, new_state);
+    RCC_APB2PeriphClockCmd(adc_rcc[this->adc_num], new_state);
+    ADC_Cmd(adc_x[this->adc_num], new_state);
 
     if (new_state == ENABLE) {
         adc_calibration();
@@ -152,13 +143,13 @@ void adc::adc_en_dis(FunctionalState new_state)
 
 void adc::adc_calibration(void)
 {
-    ADC_ResetCalibration(adc_x);
-    while (ADC_GetResetCalibrationStatus(adc_x)) {
+    ADC_ResetCalibration(adc_x[this->adc_num]);
+    while (ADC_GetResetCalibrationStatus(adc_x[this->adc_num])) {
         ;
     }
 
-    ADC_StartCalibration(adc_x);
-    while (ADC_GetCalibrationStatus(adc_x)) {
+    ADC_StartCalibration(adc_x[this->adc_num]);
+    while (ADC_GetCalibrationStatus(adc_x[this->adc_num])) {
         ;
     }
 }
