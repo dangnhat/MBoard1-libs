@@ -30,7 +30,7 @@
  * | delay_ms_ISR   |           | subISR_ptr    |
  * | btn_ISR        |           | subISR_ptr    |
  * | ............   |           | ............  |
- * g_numOfSubISR_max (default = 4)
+ * g_numOfSubISR_max (default = 8)
  *
  * (NVIC)
  * 2 bit for preemption priority
