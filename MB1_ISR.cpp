@@ -9,6 +9,7 @@
 
 /* Includes */
 #include "MB1_ISR.h"
+#include "thread.h" /* RIOT's header */
 
 using namespace ISRMgr_ns;
 
@@ -476,6 +477,12 @@ void isr_systick(void)
         }
     }
 
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
+
     return;
 }
 
@@ -492,6 +499,12 @@ void isr_tim6(void)
         }
     }
 
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
+
     return;
 }
 
@@ -506,6 +519,12 @@ void isr_exti0(void)
             EXTI_subISR_table[0][a_count]();
         }
     }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
 }
 
 void isr_exti1(void)
@@ -519,6 +538,12 @@ void isr_exti1(void)
             EXTI_subISR_table[1][a_count]();
         }
     }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
 }
 
 void isr_exti2(void)
@@ -532,6 +557,12 @@ void isr_exti2(void)
             EXTI_subISR_table[2][a_count]();
         }
     }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
 }
 
 void isr_exti3(void)
@@ -545,6 +576,12 @@ void isr_exti3(void)
             EXTI_subISR_table[3][a_count]();
         }
     }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
 }
 
 void isr_exti4(void)
@@ -558,6 +595,12 @@ void isr_exti4(void)
             EXTI_subISR_table[4][a_count]();
         }
     }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
 }
 
 void isr_exti9_5(void)
@@ -613,6 +656,12 @@ void isr_exti9_5(void)
             }
         }
     }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
 }
 
 void isr_exti15_10(void)
@@ -680,6 +729,12 @@ void isr_exti15_10(void)
         }
 
     }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
 }
 
 void isr_usart3(void)
@@ -694,6 +749,12 @@ void isr_usart3(void)
             USART3_subISR_table[a_count]();
         }
     }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
 
     return;
 }
