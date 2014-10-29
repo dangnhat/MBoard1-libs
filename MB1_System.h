@@ -22,6 +22,7 @@
 #include "MB1_GPIO.h"
 #include "MB1_ADC.h"
 #include "MB1_PWM.h"
+#include "MB1_rtc.h"
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 
@@ -56,6 +57,9 @@ extern crc_hw MB1_crc;
 
 /**< ISRs */
 extern ISRMgr MB1_ISRs;
+
+/* RTC */
+extern rtc MB1_rtc;
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 

@@ -32,6 +32,10 @@
  * | ............   |           | ............  |
  * g_numOfSubISR_max (default = 8)
  *
+ * (MB1_rtc)
+ * LSE clock source, prescaler (0x7FFF), period = 1s.
+ * Time base: 1-Jan-2000, 00:00:00.
+ *
  * (NVIC)
  * 2 bit for preemption priority
  * 2 bit for sub priority
@@ -76,6 +80,9 @@ crc_hw MB1_crc;
 
 /**< ISRs */
 ISRMgr MB1_ISRs;
+
+/* RTC */
+rtc MB1_rtc;
 
 /**< NVIC */
 const uint32_t MB1_NVIC_PriorityGroup = NVIC_PriorityGroup_2;
@@ -126,6 +133,8 @@ const bool MB1_conf_LedBeat_isUsed = true;
 const bool MB1_conf_delayms_isUsed = true;
 const bool MB1_conf_btnProcessing_isUsed = true;
 /**< for ISRs */
+
+/* for rtc (default value) */
 
 /**< others */
 const bool MB1_conf_bugsFix_isUsed = false;
@@ -189,6 +198,9 @@ void MB1_system_init (void){
     if (MB1_conf_btnProcessing_isUsed)
         MB1_ISRs.subISR_assign (MB1_conf_miscTIM_ISRType, btnProcessing_miscTIMISR);
     /**< end ISRs */
+
+    /* RTC */
+    MB1_rtc.init();
 
     /**< NVIC priority group config */
     NVIC_PriorityGroupConfig (MB1_NVIC_PriorityGroup);
