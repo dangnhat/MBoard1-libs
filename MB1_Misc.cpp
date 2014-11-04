@@ -57,7 +57,7 @@ void bugs_fix (void){
 
     TIM_ARRPreloadConfig (miscTIM, ENABLE);
     TIM_ITConfig (miscTIM, TIM_IT_Update, ENABLE);
-    TIM_PrescalerConfig (miscTIM, prescaler, TIM_PSCReloadMode_Update);
+    TIM_PrescalerConfig (miscTIM, prescaler, TIM_PSCReloadMode_Immediate);
     TIM_SetAutoreload (miscTIM, reloadVal);
     TIM_UpdateDisableConfig (miscTIM, DISABLE);
     TIM_UpdateRequestConfig (miscTIM, TIM_UpdateSource_Global);

@@ -14,8 +14,8 @@ using namespace Btn_ns;
 const uint8_t numOfBtns = 2;
 
 const uint8_t btn_activeStates [numOfBtns] = {0, 0};
-const uint8_t btn_samplingTimeCycle = 5; // * miscTIM_period
-const uint16_t btn_longPressedTime = 200; // * btn_samplingTimeCycle
+const uint8_t btn_samplingTimeCycle = 10; // * miscTIM_period
+const uint16_t btn_longPressedTime = 100; // * btn_samplingTimeCycle
 
 GPIO_TypeDef *btn_GPIO_ports [numOfBtns] = {GPIOB, GPIOA};
 const uint16_t btn_GPIO_pins [numOfBtns] = {GPIO_Pin_2, GPIO_Pin_8};

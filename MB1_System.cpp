@@ -27,8 +27,8 @@
  * (MB1_ISRs)
  * TIM6_ISRs                    other ISR
  * | LedBeat_ISR    |           | subISR_ptr    |
- * | delay_ms_ISR   |           | subISR_ptr    |
  * | btn_ISR        |           | subISR_ptr    |
+ * |                |           | subISR_ptr    |
  * | ............   |           | ............  |
  * g_numOfSubISR_max (default = 8)
  *
@@ -130,7 +130,6 @@ const uint8_t MB1_conf_USART3_retarget = USART_stdStream_stdout;
 
 /**< for ISRs */
 const bool MB1_conf_LedBeat_isUsed = true;
-const bool MB1_conf_delayms_isUsed = true;
 const bool MB1_conf_btnProcessing_isUsed = true;
 /**< for ISRs */
 
@@ -193,8 +192,6 @@ void MB1_system_init (void){
     /**< ISRs */
     if (MB1_conf_LedBeat_isUsed)
         MB1_ISRs.subISR_assign (MB1_conf_miscTIM_ISRType, LedBeat_miscTIMISR);
-    if (MB1_conf_delayms_isUsed)
-        MB1_ISRs.subISR_assign (MB1_conf_miscTIM_ISRType, delay_ms_miscTIMISR);
     if (MB1_conf_btnProcessing_isUsed)
         MB1_ISRs.subISR_assign (MB1_conf_miscTIM_ISRType, btnProcessing_miscTIMISR);
     /**< end ISRs */
