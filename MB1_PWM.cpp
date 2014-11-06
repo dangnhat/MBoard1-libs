@@ -21,6 +21,7 @@ pwm_hw::pwm_hw(void)
     this->channel = 1;
     this->mode = TIM_OCMode_PWM1;
     this->period = 665;
+    this->prescaler = 1;
 }
 
 bool pwm_hw::pwm_init(pwm_params_t *pwm_params)
@@ -31,6 +32,7 @@ bool pwm_hw::pwm_init(pwm_params_t *pwm_params)
     /* save internal value */
     this->channel = pwm_params->pwm_channel;
     this->period = pwm_params->period;
+    this->prescaler = pwm_params->prescaler;
     this->mode = pwm_params->pwm_mode;
     this->timer = (uint8_t) pwm_params->timer;
 
@@ -70,7 +72,7 @@ bool pwm_hw::pwm_init(pwm_params_t *pwm_params)
     timer_base_init();
 
     /* PWMx mode configuration: Channel y */
-    output_channel_init(0);
+    output_channel_init(pwm_params->pulse_width);
 
     TIM_ARRPreloadConfig(timer_x[timer], ENABLE);
 
