@@ -90,8 +90,6 @@ void gpio::gpio_reset(void)
 
 bool gpio::exti_init(exti_trigger_t trigger)
 {
-    EXTI_InitTypeDef exti_init_struct;
-
     /* Save trigger state */
     this->trigger = trigger;
 

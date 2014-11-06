@@ -11,10 +11,6 @@ using namespace pwm_ns;
 
 TIM_TypeDef *timer_x[] = { TIM1, TIM8, TIM2, TIM3, TIM4, TIM5 };
 
-const uint16_t sys_core_clock = 72; //MHz
-/* TIM counter clock in PWM mode will run at 24MHz */
-const uint16_t prescaler = (uint16_t) (sys_core_clock / 24) - 1;
-
 pwm_hw::pwm_hw(void)
 {
     this->timer = 0; //TIM1 as default.
@@ -85,13 +81,12 @@ bool pwm_hw::pwm_init(pwm_params_t *pwm_params)
 void pwm_hw::pwm_period_setup(uint16_t period)
 {
     this->period = period; //update period.
-
     timer_base_init();
 }
 
 void pwm_hw::pwm_prescaler_setup(uint16_t prescaler)
 {
-    this->prescaler = prescaler;
+    this->prescaler = prescaler; //update prescaler
     timer_base_init();
 }
 

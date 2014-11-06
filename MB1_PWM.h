@@ -57,11 +57,28 @@ public:
      */
     void pwm_period_setup(uint16_t period);
 
+    /**
+     * @brief Set up prescaler of PWM.
+     *
+     * @param[in] prescaler 0->65535.
+     */
     void pwm_prescaler_setup(uint16_t prescaler);
 
+    /**
+     * @brief Set up pulse width.
+     *
+     * @params[in] pulse_width
+     */
     void pwm_pulse_width_setup(uint16_t pulse_width);
 
+    /**
+     * @brief enable output channel
+     */
     void pwm_oc_enable(void);
+
+    /**
+     * @brief disable output channel
+     */
     void pwm_oc_disable(void);
 protected:
     uint16_t period;
@@ -76,6 +93,11 @@ private:
      */
     void timer_base_init(void);
 
+    /**
+     * @brief Initialize output channel.
+     *
+     * @param[in] timer_pulse Pulse width
+     */
     void output_channel_init(uint16_t timer_pulse);
 };
 
