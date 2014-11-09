@@ -14,6 +14,8 @@
 #include "MB1_Glb.h"
 #include "MB1_Misc.h"
 
+typedef void (*callback_t)(void *arg);
+
 namespace ISRMgr_ns {
 
 const uint8_t numOfSubISR_max = 8;
@@ -81,8 +83,9 @@ private:
 
     /**< EXTI */
     void EXTI_subISR_table_init(void);
-    ISRMgr_ns::status_t subISR_EXTI_assign(uint8_t exti_line, void(*subISR_p)(void));
-    ISRMgr_ns::status_t subISR_EXTI_remove(uint8_t exti_line, void(*subISR_p)(void));
+public:
+    ISRMgr_ns::status_t subISR_EXTI_assign(uint8_t exti_line, callback_t subISR_p, void *arg);
+    ISRMgr_ns::status_t subISR_EXTI_remove(uint8_t exti_line, callback_t subISR_p);
     /**< EXTI */
 };
 
