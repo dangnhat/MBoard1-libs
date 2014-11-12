@@ -101,7 +101,6 @@ void bugs_fix (void){
  void LedBeat (bool On, uint16_t msec, Led* aLed){
     if (On == false){
         LedBeat_count = -1;
-        LedBeat_LedPtr->off();
         LedBeat_LedPtr = NULL;
         return;
     }

@@ -129,7 +129,7 @@ const uint8_t MB1_conf_USART3_retarget = USART_stdStream_stdout;
 /**< for USART3 */
 
 /**< for ISRs */
-const bool MB1_conf_LedBeat_isUsed = true;
+const bool MB1_conf_LedBeat_isUsed = false;
 const bool MB1_conf_btnProcessing_isUsed = true;
 /**< for ISRs */
 
@@ -209,7 +209,7 @@ void MB1_system_init (void){
 
     /* Reset MBoard-1 system to default state */
     MB1_defaultState_reset();
- }
+}
 
 /**
  * @brief   Reset MBoard-1 system to default state.
