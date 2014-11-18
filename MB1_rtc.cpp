@@ -20,8 +20,10 @@ rtc::rtc(void)
 }
 
 /*----------------------------------------------------------------------------*/
-void rtc::init(rtc_ns::rtc_params_t &params, rtc_ns::time_t &timebase)
+void rtc::init(rtc_ns::rtc_params_t &params, rtc_ns::time_t &timebase, bool sec_int)
 {
+    NVIC_InitTypeDef nvicStruct;
+
     /* Enable PWR and BKP clock */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
 
@@ -60,6 +62,18 @@ void rtc::init(rtc_ns::rtc_params_t &params, rtc_ns::time_t &timebase)
         break;
     }
 
+    if (sec_int) {
+        RTC_ITConfig(RTC_IT_SEC, ENABLE);
+        RTC_WaitForLastTask();
+
+        nvicStruct.NVIC_IRQChannel = RTC_IRQn;
+        nvicStruct.NVIC_IRQChannelCmd = ENABLE;
+        nvicStruct.NVIC_IRQChannelPreemptionPriority = 0x0F;
+        nvicStruct.NVIC_IRQChannelSubPriority = 0x0F;
+
+        NVIC_Init (&nvicStruct);
+    }
+
     memcpy((void *)&this->timebase, (void *)&timebase, sizeof(time_t));
 }
 
@@ -80,7 +94,7 @@ void rtc::init(void)
     timebase.min = 0;
     timebase.sec = 0;
 
-    init(params, timebase);
+    init(params, timebase, true);
 }
 
 /*----------------------------------------------------------------------------*/

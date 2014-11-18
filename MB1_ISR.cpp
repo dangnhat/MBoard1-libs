@@ -24,6 +24,10 @@ typedef struct {
 void (*SysTick_subISR_table[numOfSubISR_max])(void);
 /**< SysTick sub ISR table */
 
+/**< SysTick sub ISR table */
+void (*RTC_subISR_table[numOfSubISR_max])(void);
+/**< SysTick sub ISR table */
+
 /**< TIM6 sub ISR table */
 void (*TIM6_subISR_table[numOfSubISR_max])(void);
 /**< TIM6 sub ISR table */
@@ -47,6 +51,7 @@ ISRMgr::ISRMgr(void)
 {
     /**< Init sub ISR table of SysTick */
     SysTick_subISR_table_init();
+    RTC_subISR_table_init();
     TIM6_subISR_table_init();
     USART1_subISR_table_init();
     EXTI_subISR_table_init();
@@ -71,6 +76,9 @@ status_t ISRMgr::subISR_assign(ISR_t ISR_type, void (*subISR_p)(void))
     case ISRMgr_SysTick:
         retval = subISR_SysTick_assign(subISR_p);
         break;
+    case ISRMgr_RTC:
+        retval = subISR_RTC_assign(subISR_p);
+        break;
     case ISRMgr_TIM6:
         retval = subISR_TIM6_assign(subISR_p);
         break;
@@ -78,8 +86,8 @@ status_t ISRMgr::subISR_assign(ISR_t ISR_type, void (*subISR_p)(void))
         retval = subISR_USART1_assign(subISR_p);
         break;
     case ISRMgr_USART3:
-		retval = subISR_USART3_assign(subISR_p);
-		break;
+        retval = subISR_USART3_assign(subISR_p);
+        break;
 //    case ISRMgr_EXTI0:
 //    case ISRMgr_EXTI1:
 //    case ISRMgr_EXTI2:
@@ -122,6 +130,9 @@ status_t ISRMgr::subISR_remove(ISR_t ISR_type, void (*subISR_p)(void))
     case ISRMgr_SysTick:
         retval = subISR_SysTick_remove(subISR_p);
         break;
+    case ISRMgr_RTC:
+        retval = subISR_RTC_remove(subISR_p);
+        break;
     case ISRMgr_TIM6:
         retval = subISR_TIM6_remove(subISR_p);
         break;
@@ -129,8 +140,8 @@ status_t ISRMgr::subISR_remove(ISR_t ISR_type, void (*subISR_p)(void))
         retval = subISR_USART1_remove(subISR_p);
         break;
     case ISRMgr_USART3:
-		retval = subISR_USART3_remove(subISR_p);
-		break;
+        retval = subISR_USART3_remove(subISR_p);
+        break;
 //    case ISRMgr_EXTI0:
 //    case ISRMgr_EXTI1:
 //    case ISRMgr_EXTI2:
@@ -217,6 +228,71 @@ void ISRMgr::SysTick_subISR_table_init(void)
     uint8_t a_count;
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
         SysTick_subISR_table[a_count] = NULL;
+    }
+}
+/**< SysTick private */
+
+/**< RTC private */
+
+/**
+ * @brief subISR_RTC_assign. assign a sub ISR func ptr to RTC_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_RTC_assign(void (*subISR_p)(void))
+{
+    uint8_t i;
+    bool found = false;
+
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (RTC_subISR_table[i] == NULL) {
+            found = true;
+            RTC_subISR_table[i] = subISR_p;
+
+            break;
+        }
+    }
+
+    if (found)
+        return successful;
+
+    return failed;
+}
+
+/**
+ * @brief subISR_RTC_remove. Remove a sub ISR func ptr to RTC_subISR_table.
+ * @param void (* subISR_p)(void)
+ * @return None.
+ */
+status_t ISRMgr::subISR_RTC_remove(void (*subISR_p)(void))
+{
+    uint8_t i;
+    bool found = false;
+
+    for (i = 0; i < numOfSubISR_max; i++) {
+        if (RTC_subISR_table[i] == subISR_p) {
+            found = true;
+            RTC_subISR_table[i] = NULL;
+
+            break;
+        }
+    }
+
+    if (found)
+        return successful;
+
+    return failed;
+}
+
+/**
+ * @brief RTC_subISR_table_init. Init all value in RTC_subISR_table.
+ * @return None.
+ */
+void ISRMgr::RTC_subISR_table_init(void)
+{
+    uint8_t a_count;
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        RTC_subISR_table[a_count] = NULL;
     }
 }
 /**< SysTick private */
@@ -420,7 +496,8 @@ void ISRMgr::USART3_subISR_table_init(void)
  * @param void (* subISR_p)(void)
  * @return None.
  */
-status_t ISRMgr::subISR_EXTI_assign(uint8_t exti_line,  callback_t subISR_p, void *arg)
+status_t ISRMgr::subISR_EXTI_assign(uint8_t exti_line, callback_t subISR_p,
+        void *arg)
 {
     uint8_t i;
 
@@ -441,7 +518,7 @@ status_t ISRMgr::subISR_EXTI_assign(uint8_t exti_line,  callback_t subISR_p, voi
  * @param void (* subISR_p)(void)
  * @return None.
  */
-status_t ISRMgr::subISR_EXTI_remove(uint8_t exti_line,  callback_t subISR_p)
+status_t ISRMgr::subISR_EXTI_remove(uint8_t exti_line, callback_t subISR_p)
 {
     uint8_t i;
 
@@ -492,6 +569,28 @@ void isr_systick(void)
     return;
 }
 
+void isr_rtc(void)
+{
+    uint8_t a_count;
+
+    /* Clear the RTC Second interrupt */
+    RTC_ClearITPendingBit(RTC_IT_SEC | RTC_IT_OW | RTC_IT_ALR);
+
+    for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
+        if (RTC_subISR_table[a_count] != NULL) {
+            RTC_subISR_table[a_count]();
+        }
+    }
+
+    /* RIOT specific code */
+    if (sched_context_switch_request) {
+        thread_yield();
+    }
+    /* RIOT specific code */
+
+    return;
+}
+
 /* Changed from TIM6_IRQHandler to isr_tim6 to comply with RIOT */
 void isr_tim6(void)
 {
@@ -518,11 +617,12 @@ void isr_exti0(void)
 {
     uint8_t a_count;
 
-    EXTI_ClearITPendingBit (EXTI_Line0);
+    EXTI_ClearITPendingBit(EXTI_Line0);
 
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
         if (EXTI_subISR_table[0][a_count].callback != NULL) {
-            EXTI_subISR_table[0][a_count].callback(EXTI_subISR_table[0][a_count].arg);
+            EXTI_subISR_table[0][a_count].callback(
+                    EXTI_subISR_table[0][a_count].arg);
         }
     }
 
@@ -537,11 +637,12 @@ void isr_exti1(void)
 {
     uint8_t a_count;
 
-    EXTI_ClearITPendingBit (EXTI_Line1);
+    EXTI_ClearITPendingBit(EXTI_Line1);
 
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
         if (EXTI_subISR_table[1][a_count].callback != NULL) {
-            EXTI_subISR_table[1][a_count].callback(EXTI_subISR_table[1][a_count].arg);
+            EXTI_subISR_table[1][a_count].callback(
+                    EXTI_subISR_table[1][a_count].arg);
         }
     }
 
@@ -556,11 +657,12 @@ void isr_exti2(void)
 {
     uint8_t a_count;
 
-    EXTI_ClearITPendingBit (EXTI_Line2);
+    EXTI_ClearITPendingBit(EXTI_Line2);
 
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
         if (EXTI_subISR_table[2][a_count].callback != NULL) {
-            EXTI_subISR_table[2][a_count].callback(EXTI_subISR_table[2][a_count].arg);
+            EXTI_subISR_table[2][a_count].callback(
+                    EXTI_subISR_table[2][a_count].arg);
         }
     }
 
@@ -575,11 +677,12 @@ void isr_exti3(void)
 {
     uint8_t a_count;
 
-    EXTI_ClearITPendingBit (EXTI_Line3);
+    EXTI_ClearITPendingBit(EXTI_Line3);
 
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
         if (EXTI_subISR_table[3][a_count].callback != NULL) {
-            EXTI_subISR_table[3][a_count].callback(EXTI_subISR_table[3][a_count].arg);
+            EXTI_subISR_table[3][a_count].callback(
+                    EXTI_subISR_table[3][a_count].arg);
         }
     }
 
@@ -594,11 +697,12 @@ void isr_exti4(void)
 {
     uint8_t a_count;
 
-    EXTI_ClearITPendingBit (EXTI_Line4);
+    EXTI_ClearITPendingBit(EXTI_Line4);
 
     for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
         if (EXTI_subISR_table[4][a_count].callback != NULL) {
-            EXTI_subISR_table[4][a_count].callback(EXTI_subISR_table[4][a_count].arg);
+            EXTI_subISR_table[4][a_count].callback(
+                    EXTI_subISR_table[4][a_count].arg);
         }
     }
 
@@ -615,31 +719,34 @@ void isr_exti9_5(void)
 
     if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line5);
+        EXTI_ClearITPendingBit(EXTI_Line5);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[5][a_count].callback != NULL) {
-                EXTI_subISR_table[5][a_count].callback(EXTI_subISR_table[5][a_count].arg);
+                EXTI_subISR_table[5][a_count].callback(
+                        EXTI_subISR_table[5][a_count].arg);
             }
         }
 
     } else if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line6);
+        EXTI_ClearITPendingBit(EXTI_Line6);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[6][a_count].callback != NULL) {
-                EXTI_subISR_table[6][a_count].callback(EXTI_subISR_table[6][a_count].arg);
+                EXTI_subISR_table[6][a_count].callback(
+                        EXTI_subISR_table[6][a_count].arg);
             }
         }
 
     } else if (EXTI_GetITStatus(EXTI_Line7) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line7);
+        EXTI_ClearITPendingBit(EXTI_Line7);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[7][a_count].callback != NULL) {
-                EXTI_subISR_table[7][a_count].callback(EXTI_subISR_table[7][a_count].arg);
+                EXTI_subISR_table[7][a_count].callback(
+                        EXTI_subISR_table[7][a_count].arg);
             }
         }
 
@@ -647,18 +754,20 @@ void isr_exti9_5(void)
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[8][a_count].callback != NULL) {
-                EXTI_subISR_table[8][a_count].callback(EXTI_subISR_table[8][a_count].arg);
+                EXTI_subISR_table[8][a_count].callback(
+                        EXTI_subISR_table[8][a_count].arg);
             }
         }
-        EXTI_ClearITPendingBit (EXTI_Line8);
+        EXTI_ClearITPendingBit(EXTI_Line8);
 
     } else if (EXTI_GetITStatus(EXTI_Line9) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line9);
+        EXTI_ClearITPendingBit(EXTI_Line9);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[9][a_count].callback != NULL) {
-                EXTI_subISR_table[9][a_count].callback(EXTI_subISR_table[9][a_count].arg);
+                EXTI_subISR_table[9][a_count].callback(
+                        EXTI_subISR_table[9][a_count].arg);
             }
         }
     }
@@ -676,61 +785,67 @@ void isr_exti15_10(void)
 
     if (EXTI_GetITStatus(EXTI_Line10) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line10);
+        EXTI_ClearITPendingBit(EXTI_Line10);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[10][a_count].callback != NULL) {
-                EXTI_subISR_table[10][a_count].callback(EXTI_subISR_table[10][a_count].arg);
+                EXTI_subISR_table[10][a_count].callback(
+                        EXTI_subISR_table[10][a_count].arg);
             }
         }
 
     } else if (EXTI_GetITStatus(EXTI_Line11) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line11);
+        EXTI_ClearITPendingBit(EXTI_Line11);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[11][a_count].callback != NULL) {
-                EXTI_subISR_table[11][a_count].callback(EXTI_subISR_table[11][a_count].arg);
+                EXTI_subISR_table[11][a_count].callback(
+                        EXTI_subISR_table[11][a_count].arg);
             }
         }
 
     } else if (EXTI_GetITStatus(EXTI_Line12) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line12);
+        EXTI_ClearITPendingBit(EXTI_Line12);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[12][a_count].callback != NULL) {
-                EXTI_subISR_table[12][a_count].callback(EXTI_subISR_table[12][a_count].arg);
+                EXTI_subISR_table[12][a_count].callback(
+                        EXTI_subISR_table[12][a_count].arg);
             }
         }
 
     } else if (EXTI_GetITStatus(EXTI_Line13) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line13);
+        EXTI_ClearITPendingBit(EXTI_Line13);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[13][a_count].callback != NULL) {
-                EXTI_subISR_table[13][a_count].callback(EXTI_subISR_table[13][a_count].arg);
+                EXTI_subISR_table[13][a_count].callback(
+                        EXTI_subISR_table[13][a_count].arg);
             }
         }
 
     } else if (EXTI_GetITStatus(EXTI_Line14) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line14);
+        EXTI_ClearITPendingBit(EXTI_Line14);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[14][a_count].callback != NULL) {
-                EXTI_subISR_table[14][a_count].callback(EXTI_subISR_table[14][a_count].arg);
+                EXTI_subISR_table[14][a_count].callback(
+                        EXTI_subISR_table[14][a_count].arg);
             }
         }
 
     } else if (EXTI_GetITStatus(EXTI_Line15) != RESET) {
 
-        EXTI_ClearITPendingBit (EXTI_Line15);
+        EXTI_ClearITPendingBit(EXTI_Line15);
 
         for (a_count = 0; a_count < numOfSubISR_max; a_count++) {
             if (EXTI_subISR_table[15][a_count].callback != NULL) {
-                EXTI_subISR_table[15][a_count].callback(EXTI_subISR_table[15][a_count].arg);
+                EXTI_subISR_table[15][a_count].callback(
+                        EXTI_subISR_table[15][a_count].arg);
             }
         }
 

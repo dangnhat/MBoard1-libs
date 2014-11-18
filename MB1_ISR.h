@@ -43,6 +43,7 @@ typedef enum {
     ISRMgr_EXTI14 = 14,
     ISRMgr_EXTI15 = 15,
     ISRMgr_SysTick,
+    ISRMgr_RTC,
     ISRMgr_TIM6,
     ISRMgr_USART1,
     ISRMgr_USART3
@@ -61,6 +62,12 @@ private:
     void SysTick_subISR_table_init (void);
     ISRMgr_ns::status_t subISR_SysTick_assign (void (* subISR_p)(void) );
     ISRMgr_ns::status_t subISR_SysTick_remove (void (* subISR_p)(void) );
+    /**< SysTick */
+
+    /**< SysTick */
+    void RTC_subISR_table_init (void);
+    ISRMgr_ns::status_t subISR_RTC_assign (void (* subISR_p)(void) );
+    ISRMgr_ns::status_t subISR_RTC_remove (void (* subISR_p)(void) );
     /**< SysTick */
 
     /**< TIM6 */
@@ -103,6 +110,7 @@ void isr_exti4(void);
 void isr_exti9_5(void);
 void isr_exti15_10(void);
 void isr_usart3(void);
+void isr_rtc(void);
 #ifdef __cplusplus
 }
 #endif

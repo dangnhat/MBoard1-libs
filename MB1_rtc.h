@@ -69,6 +69,7 @@ public:
      *          + Time period: 1s
      *          + Turn on clock for power and backup interface.
      *          + Enable access to RTC and backup registers. (set BDP bit in PWR_CR)
+     *          + Enable second interrupt.
      */
     void init(void);
 
@@ -88,8 +89,11 @@ public:
      *              + prescaler,
      * @param[in]   &timebase, struct holding the base (year, month, day, day of week,
      *              hour, min, sec) to calculate current time, date.
+     *
+     * @param[in]   sec_int, true to enable Second interrupt.
+     *              Prio will be set to lowest value by default.
      */
-    void init(rtc_ns::rtc_params_t &params, rtc_ns::time_t &timebase);
+    void init(rtc_ns::rtc_params_t &params, rtc_ns::time_t &timebase, bool sec_int);
 
     /**
      * @brief   Get current time and date.
