@@ -149,7 +149,25 @@ void rtc::set_time_raw(uint32_t value)
     RTC_WaitForLastTask();
 }
 
-/*------------------- Private methods ----------------------------------------*/
+/*----------------------------------------------------------------------------*/
+uint32_t rtc::get_time_packed(void)
+{
+    time_t a_time;
+
+    get_time(a_time);
+    return time_to_packed(a_time);
+}
+
+/*----------------------------------------------------------------------------*/
+void rtc::set_time_packed(uint32_t packed_time)
+{
+    time_t a_time;
+
+    packed_to_time(packed_time, a_time);
+    set_time(a_time);
+}
+
+/*------------------- Conversion methods -------------------------------------*/
 
 void rtc::raw_to_time(uint32_t time_raw, rtc_ns::time_t &time)
 {
@@ -332,4 +350,30 @@ uint32_t rtc::time_to_raw(rtc_ns::time_t &time)
     raw_value += total_day * 24 * 3600;
 
     return raw_value;
+}
+
+/*----------------------------------------------------------------------------*/
+void rtc::packed_to_time(uint32_t packed_time, rtc_ns::time_t &time)
+{
+    time.year = (packed_time >> 25) + timebase.year;
+    time.month = (packed_time >> 21) & 0xF;
+    time.day = (packed_time >> 16) & 0x1F;
+    time.hour = (packed_time >> 11) & 0x1F;
+    time.min = (packed_time >> 5) & 0x3F;
+    time.sec = (packed_time & 0x1F) * 2;
+}
+
+/*----------------------------------------------------------------------------*/
+uint32_t rtc::time_to_packed(rtc_ns::time_t &time)
+{
+    uint32_t packed_time = 0;
+
+    packed_time = ((uint32_t)(time.year - timebase.year)) << 25;
+    packed_time = packed_time | (((uint32_t) time.month) << 21);
+    packed_time = packed_time | (((uint32_t)time.day) << 16);
+    packed_time = packed_time | (((uint32_t)time.hour) << 11);
+    packed_time = packed_time | (((uint32_t)time.min) << 5);
+    packed_time = packed_time | (uint32_t)(time.sec / 2);
+
+    return packed_time;
 }
