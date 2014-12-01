@@ -70,6 +70,7 @@ public:
      *          + Turn on clock for power and backup interface.
      *          + Enable access to RTC and backup registers. (set BDP bit in PWR_CR)
      *          + Enable second interrupt.
+     *          + Time base: 00:00:00 1-Jan-2000, Sat.
      */
     void init(void);
 
@@ -111,6 +112,28 @@ public:
     void set_time(rtc_ns::time_t &time);
 
     /**
+     * @brief   Get packed time in 32 bit. Packed time format:
+     *          bit 0-4: second / 2.
+     *          bit 5-10: minute.
+     *          bit 11-15: hour.
+     *          bit 16-20: day in month.
+     *          bit 21-24: month.
+     *          bit 25-31: number of years from timebase.year.
+     */
+    uint32_t get_time_packed(void);
+
+    /**
+     * @brief   Set packed time in 32 bit to system time. Packed time format:
+     *          bit 0-4: second / 2.
+     *          bit 5-10: minute.
+     *          bit 11-15: hour.
+     *          bit 16-20: day in month.
+     *          bit 21-24: month.
+     *          bit 25-31: number of years from timebase.year.
+     */
+    void set_time_packed(uint32_t packed_time);
+
+    /**
      * @brief   Get the raw value of rtc's counter.
      *
      * @return  Raw value.
@@ -124,10 +147,6 @@ public:
      */
     void set_time_raw(uint32_t value);
 
-private:
-    rtc_ns::time_t timebase;
-
-    /*------------------------- private functions ----------------------------*/
     /**
      * @brief   Check whether the given year is a leap year or not.
      *
@@ -157,6 +176,40 @@ private:
      * @return  raw value for rtc counter (> 0), 0 if error.
      */
     uint32_t time_to_raw(rtc_ns::time_t &time);
+
+    /**
+     * @brief   Convert packed time to time_t with timebase (year).
+     *
+     * @param[in]   packed_time, packed_time format:
+     *              bit 0-4: second / 2.
+     *              bit 5-10: minute.
+     *              bit 11-15: hour.
+     *              bit 16-20: day in month.
+     *              bit 21-24: month.
+     *              bit 25-31: number of years from timebase.year.
+     * @param[out]  time, struct holding year, month (1-12), day (1-31), dayow (0-6),
+     *             hour (0-59), min (0-59), sec (0-59).
+     */
+    void packed_to_time(uint32_t packed_time, rtc_ns::time_t &time);
+
+    /**
+     * @brief   Convert time_t to packed_time with timebase (year).
+     *
+     * @param[in]   &time, struct holding year, month (1-12), day (1-31), dayow (0-6),
+     *              hour (0-59), min (0-59), sec (0-59).
+     *
+     * @return      packed_time, packed_time format:
+     *              bit 0-4: second / 2.
+     *              bit 5-10: minute.
+     *              bit 11-15: hour.
+     *              bit 16-20: day in month.
+     *              bit 21-24: month.
+     *              bit 25-31: number of years from timebase.year.
+     */
+    uint32_t time_to_packed(rtc_ns::time_t &time);
+
+private:
+    rtc_ns::time_t timebase;
 };
 
 
