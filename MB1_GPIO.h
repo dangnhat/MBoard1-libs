@@ -38,8 +38,9 @@ typedef enum {
     both_edge = 0x10
 } exti_trigger_t;
 
-typedef enum {
-    in_analog = 0x00,
+typedef enum
+    : uint8_t {
+        in_analog = 0x00,
     in_floating = 0x04,
     in_pull_down = 0x28,
     in_pull_up = 0x48,
@@ -132,7 +133,8 @@ private:
     gpio_ns::exti_trigger_t trigger;
     bool in_mode;
 
-    void exti_line_init(gpio_ns::exti_trigger_t trigger, FunctionalState new_state);
+    void exti_line_init(gpio_ns::exti_trigger_t trigger,
+            FunctionalState new_state);
 
     void nvic_init(uint8_t preemption, uint8_t sub);
 };
