@@ -45,7 +45,7 @@
  * - no NJTRST.
  */
 
- #include "MB1_System.h"
+#include "MB1_System.h"
 
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 
@@ -57,21 +57,21 @@ gpio MB1_EXTI11;
 adc MB1_ADC1_IN16;
 
 /**< SPIs */
-SPI MB1_SPI1 (1);
-SPI MB1_SPI2 (2);
+SPI MB1_SPI1(1);
+SPI MB1_SPI2(2);
 
 /**< LEDs */
-Led MB1_Led_green (Led_ns::green);
-Led MB1_Led_red (Led_ns::red);
+Led MB1_Led_green(Led_ns::green);
+Led MB1_Led_red(Led_ns::red);
 
 /**< Buttons */
-Button MB1_usrBtn0 (Btn_ns::usrBtn_0);
-Button MB1_usrBtn1 (Btn_ns::usrBtn_1);
+Button MB1_usrBtn0(Btn_ns::usrBtn_0);
+Button MB1_usrBtn1(Btn_ns::usrBtn_1);
 
 /**< USARTs */
 /* serial_t MB1_USART1 (1); */
-serial_t MB1_USART2 (2);
-serial_t MB1_USART3 (3);	//used by ANH
+serial_t MB1_USART2(2);
+serial_t MB1_USART3(3);	//used by ANH
 
 /**< CRC */
 crc_hw MB1_crc;
@@ -91,7 +91,6 @@ const uint32_t MB1_NVIC_PriorityGroup = NVIC_PriorityGroup_2;
 const uint32_t MB1_VectorTableRelocationOffset = 0x3000;
 const bool MB1_VectorTableRelocation_isUsed = false;
 
-
 /**<-------------- Global vars and objects in the system of MB1 ------------*/
 
 /**< conf interface (compile-time) */
@@ -108,10 +107,10 @@ Led *MB1_conf_ledBeat_p = &MB1_Led_red;
 
 /**< for USART1 */
 /*
-const uint32_t MB1_conf_USART1_buadrate = 9600;
-const bool MB1_conf_USART1_retarget_isUsed = false;
-const uint8_t MB1_conf_USART1_retarget = USART_stdStream_stdout;
-*/
+ const uint32_t MB1_conf_USART1_buadrate = 9600;
+ const bool MB1_conf_USART1_retarget_isUsed = false;
+ const uint8_t MB1_conf_USART1_retarget = USART_stdStream_stdout;
+ */
 /**< for USART1 */
 
 /**< for USART2 */
@@ -137,6 +136,7 @@ const bool MB1_conf_btnProcessing_isUsed = true;
 
 /**< others */
 const bool MB1_conf_bugsFix_isUsed = false;
+const bool MB1_conf_JTAG_isntUsed = true;
 const bool MB1_conf_NJTRST_isntUsed = true;
 /**< others */
 
@@ -146,65 +146,75 @@ const bool MB1_conf_NJTRST_isntUsed = true;
 static void MB1_defaultState_reset(void);
 
 /* MBoard-1 initialization */
-void MB1_system_init (void){
+void MB1_system_init(void)
+{
     /**< others */
     if (MB1_conf_bugsFix_isUsed)
-        bugs_fix ();
-    if (MB1_conf_NJTRST_isntUsed){
-        RCC_APB2PeriphClockCmd (RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
-        GPIO_PinRemapConfig (GPIO_Remap_SWJ_NoJTRST , ENABLE);
+        bugs_fix();
+    if (MB1_conf_JTAG_isntUsed) {
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO,
+                ENABLE);
+        GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+    } else if (MB1_conf_NJTRST_isntUsed) {
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO,
+                ENABLE);
+        GPIO_PinRemapConfig(GPIO_Remap_SWJ_NoJTRST, ENABLE);
     }
 
     /**< end others */
 
     /**< SysTick and led beat */
-    miscTIM_run (MB1_conf_miscTIM_p, MB1_conf_miscTIMPrescaler, MB1_conf_miscTIMReloadVal);
-    LedBeat (MB1_conf_LedBeat_isUsed, MB1_conf_ledBeat_period, MB1_conf_ledBeat_p);
+    miscTIM_run(MB1_conf_miscTIM_p, MB1_conf_miscTIMPrescaler,
+            MB1_conf_miscTIMReloadVal);
+    LedBeat(MB1_conf_LedBeat_isUsed, MB1_conf_ledBeat_period,
+            MB1_conf_ledBeat_p);
 
     /**< end SysTick and led beat */
 
     /**< USART1 */
     /* Don't use UART1 with RIOT
-    MB1_USART1.Restart (MB1_conf_USART1_buadrate);
-    if (MB1_conf_USART1_retarget_isUsed)
-        MB1_USART1.Retarget (USART_stdStream_stdout);
-    */
+     MB1_USART1.Restart (MB1_conf_USART1_buadrate);
+     if (MB1_conf_USART1_retarget_isUsed)
+     MB1_USART1.Retarget (USART_stdStream_stdout);
+     */
 
     /**< end USART1 */
 
     /**< USART2 */
-    if (MB1_USART2_isUsed){
-        MB1_USART2.Restart (MB1_conf_USART2_buadrate);
+    if (MB1_USART2_isUsed) {
+        MB1_USART2.Restart(MB1_conf_USART2_buadrate);
         if (MB1_conf_USART2_retarget_isUsed)
-            MB1_USART2.Retarget (USART_stdStream_stdout);
+            MB1_USART2.Retarget(USART_stdStream_stdout);
     }
 
     /**< end USART2 */
 
     /**< USART3 */			//used by ANH
-	if (MB1_USART3_isUsed){
-		MB1_USART3.Restart (MB1_conf_USART3_buadrate);
-		if (MB1_conf_USART3_retarget_isUsed)
-			MB1_USART3.Retarget (USART_stdStream_stdout);
-	}
-	/**< end USART3 */
+    if (MB1_USART3_isUsed) {
+        MB1_USART3.Restart(MB1_conf_USART3_buadrate);
+        if (MB1_conf_USART3_retarget_isUsed)
+            MB1_USART3.Retarget(USART_stdStream_stdout);
+    }
+    /**< end USART3 */
 
     /**< ISRs */
     if (MB1_conf_LedBeat_isUsed)
-        MB1_ISRs.subISR_assign (MB1_conf_miscTIM_ISRType, LedBeat_miscTIMISR);
+        MB1_ISRs.subISR_assign(MB1_conf_miscTIM_ISRType, LedBeat_miscTIMISR);
     if (MB1_conf_btnProcessing_isUsed)
-        MB1_ISRs.subISR_assign (MB1_conf_miscTIM_ISRType, btnProcessing_miscTIMISR);
+        MB1_ISRs.subISR_assign(MB1_conf_miscTIM_ISRType,
+                btnProcessing_miscTIMISR);
     /**< end ISRs */
 
     /* RTC */
     MB1_rtc.init();
 
     /**< NVIC priority group config */
-    NVIC_PriorityGroupConfig (MB1_NVIC_PriorityGroup);
+    NVIC_PriorityGroupConfig(MB1_NVIC_PriorityGroup);
 
     /**< Vector table relocation */
-    if (MB1_VectorTableRelocation_isUsed){
-        NVIC_SetVectorTable(NVIC_VectTab_FLASH, MB1_VectorTableRelocationOffset);
+    if (MB1_VectorTableRelocation_isUsed) {
+        NVIC_SetVectorTable(NVIC_VectTab_FLASH,
+                MB1_VectorTableRelocationOffset);
     }
 
     /* Reset MBoard-1 system to default state */
@@ -215,7 +225,8 @@ void MB1_system_init (void){
  * @brief   Reset MBoard-1 system to default state.
  *          MB1_Led_red, green off.
  */
-static void MB1_defaultState_reset(void) {
+static void MB1_defaultState_reset(void)
+{
     MB1_Led_red.off();
     MB1_Led_green.off();
 }
