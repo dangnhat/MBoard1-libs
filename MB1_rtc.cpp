@@ -86,10 +86,10 @@ void rtc::init(void)
     params.clock_src = RCC_RTCCLKSource_LSE;
     params.prescaler = 0x7FFF;
 
-    timebase.year = 2000;
+    timebase.year = 1980;
     timebase.month = 1;
     timebase.day = 1;
-    timebase.dayow = SAT;
+    timebase.dayow = TUE;
     timebase.hour = 0;
     timebase.min = 0;
     timebase.sec = 0;

@@ -11,9 +11,9 @@
  *      are available. (default)
  *  - Time/Date:
  *      + Prescaler will be set to 7FFF by default to generate 1s period.
- *      + Time/Date base will be 1-Jan-2000 00:00, Friday. (default)
+ *      + Time/Date base will be 00:00:00 1-Jan-1980, Tue. (default)
  *      + 1 unit of 32-bit RTC counter is 1s (default). Thus, the upper bound for
- *      time/date will be around 6-Feb-2136.
+ *      time/date will be around 6-Feb-2116.
  *  - NOTE: Once clock source for RTC is selected in init, it can't be changed until
  *  BKP domain is reset. (by software (BKP_DeInit) or remove VBAT and VDD).
  */
@@ -70,7 +70,7 @@ public:
      *          + Turn on clock for power and backup interface.
      *          + Enable access to RTC and backup registers. (set BDP bit in PWR_CR)
      *          + Enable second interrupt.
-     *          + Time base: 00:00:00 1-Jan-2000, Sat.
+     *          + Time base: 00:00:00 1-Jan-1980, Tue.
      */
     void init(void);
 
