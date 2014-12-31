@@ -21,7 +21,7 @@ gpio::gpio(void)
     this->in_mode = true;
 }
 
-bool gpio::gpio_init(gpio_params_t *gpio_params)
+bool gpio::gpio_init(const gpio_params_t *gpio_params)
 {
     GPIO_InitTypeDef gpio_init_struct;
 

@@ -75,7 +75,7 @@ public:
      *
      * @return true if success, false otherwise.
      */
-    bool gpio_init(gpio_ns::gpio_params_t *gpio_params);
+    bool gpio_init(const gpio_ns::gpio_params_t *gpio_params);
 
     /**
      * @frief Read level on the pin.
